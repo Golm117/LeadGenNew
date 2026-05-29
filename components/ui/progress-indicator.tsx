@@ -18,6 +18,10 @@ interface QuizProgressNavProps {
   backLabel?: string
   continueLabel?: string
   finishLabel?: string
+  /** override the "Question N of M" count text (e.g. "Your results →" on the email step) */
+  label?: string
+  /** override finish-button detection (default: step >= total) */
+  isLast?: boolean
   className?: string
 }
 
@@ -30,19 +34,18 @@ export function QuizProgressNav({
   backLabel = 'Back',
   continueLabel = 'Continue',
   finishLabel = 'See my score',
+  label,
+  isLast: isLastProp,
   className,
 }: QuizProgressNavProps) {
-  const isFirst = step <= 1
-  const isLast = step >= total
+  const isLast = isLastProp ?? step >= total
 
   return (
     <div className={cn('flex w-full flex-col items-center gap-6', className)}>
       {/* Progress dots — scale to any step count */}
       <div className="w-full max-w-sm">
         <div className="mb-3 flex items-center justify-center text-xs font-medium text-slate-500">
-          <span>
-            Question {Math.min(step, total)} of {total}
-          </span>
+          <span>{label ?? `Question ${Math.min(step, total)} of ${total}`}</span>
         </div>
         <div className="flex items-center justify-center gap-2.5">
           {Array.from({ length: total }).map((_, i) => {
@@ -69,18 +72,16 @@ export function QuizProgressNav({
       {/* Buttons — Back fades/expands in from step 2+; Continue collapses to make room */}
       <div className="w-full max-w-sm">
         <motion.div className="flex items-center gap-2" layout>
-          {!isFirst && (
-            <motion.button
-              type="button"
-              initial={{ opacity: 0, width: 0, scale: 0.8 }}
-              animate={{ opacity: 1, width: 'auto', scale: 1 }}
-              transition={{ ...SPRING, opacity: { duration: 0.2 } }}
-              onClick={onBack}
-              className="flex items-center justify-center rounded-full bg-slate-100 px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-200"
-            >
-              {backLabel}
-            </motion.button>
-          )}
+          <motion.button
+            type="button"
+            initial={{ opacity: 0, width: 0, scale: 0.8 }}
+            animate={{ opacity: 1, width: 'auto', scale: 1 }}
+            transition={{ ...SPRING, opacity: { duration: 0.2 } }}
+            onClick={onBack}
+            className="flex items-center justify-center rounded-full bg-slate-100 px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-200"
+          >
+            {backLabel}
+          </motion.button>
           <motion.button
             type="button"
             layout

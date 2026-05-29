@@ -1,6 +1,7 @@
 'use client'
 
-import { useReducer, useEffect, useCallback } from 'react'
+import { useReducer, useCallback, useState } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { QuizProgressNav } from '@/components/ui/progress-indicator'
@@ -120,6 +121,7 @@ export function AssessmentStepper() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
+  const reduce = useReducedMotion()
 
   // ── Derived values ─────────────────────────────────────────────────────────
 
@@ -127,9 +129,18 @@ export function AssessmentStepper() {
   const currentQuestion =
     typeof state.step === 'number' ? QUIZ_QUESTIONS[state.step - 1] : null
 
-  // Progress nav step: questions = 1..10, email = 11
-  const navStep = state.step === 'email' ? 11 : typeof state.step === 'number' ? state.step : 1
-  const navTotal = 11 // 10 questions + email
+  // Progress nav: 10 question dots. Questions read "Question N of 10"; the email
+  // step sits past the last dot (step 11 of 10 → all filled, none current) and
+  // reads "Your results →".
+  const navTotal = TOTAL_QUESTIONS // 10
+  const navStep =
+    state.step === 'email' ? TOTAL_QUESTIONS + 1 : typeof state.step === 'number' ? state.step : 1
+  const navLabel =
+    state.step === 'email'
+      ? 'Your results →'
+      : typeof state.step === 'number'
+        ? `Question ${state.step} of ${TOTAL_QUESTIONS}`
+        : ''
 
   // canContinue logic
   let canContinue = false
@@ -157,16 +168,12 @@ export function AssessmentStepper() {
 
   function handleSelect(questionId: string, optionId: string) {
     dispatch({ type: 'SET_ANSWER', questionId, value: optionId })
-    // Fire analytics
+    // Fire analytics. No auto-advance: the user reviews their pick and advances
+    // via Continue — a timed auto-NEXT raced the button and could skip a question.
     window.gtag?.('event', 'quiz_question_answered', {
       step: state.step,
       question_id: questionId,
     })
-    // Auto-advance single-choice after a short delay
-    const q = QUIZ_QUESTIONS.find((q) => q.id === questionId)
-    if (q?.type === 'single-choice') {
-      setTimeout(() => dispatch({ type: 'NEXT' }), 300)
-    }
   }
 
   function handleFreeTextChange(questionId: string, value: string) {
@@ -253,47 +260,54 @@ export function AssessmentStepper() {
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-indigo-50/60 to-white px-6 py-16">
       <div className="w-full max-w-xl">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-xl shadow-indigo-900/5 md:p-10">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={String(state.step)}
+              initial={reduce ? false : { opacity: 0, y: 8 }}
+              animate={reduce ? undefined : { opacity: 1, y: 0 }}
+              exit={reduce ? undefined : { opacity: 0, y: -8 }}
+              transition={{ duration: 0.15, ease: 'easeOut' }}
+            >
+              {/* ── Intro step ──────────────────────────────────────────── */}
+              {state.step === 'intro' && <IntroStep onStart={handleStart} />}
 
-          {/* ── Intro step ──────────────────────────────────────────────── */}
-          {state.step === 'intro' && (
-            <IntroStep onStart={handleStart} />
-          )}
+              {/* ── Question steps (1–10) ───────────────────────────────── */}
+              {typeof state.step === 'number' && currentQuestion && (
+                <QuestionStep
+                  question={currentQuestion}
+                  answers={state.answers}
+                  nudge={nudge}
+                  onSelect={handleSelect}
+                  onFreeTextChange={handleFreeTextChange}
+                  navStep={navStep}
+                  navTotal={navTotal}
+                  navLabel={navLabel}
+                  canContinue={canContinue}
+                  onBack={() => dispatch({ type: 'BACK' })}
+                  onContinue={handleContinue}
+                />
+              )}
 
-          {/* ── Question steps (1–10) ───────────────────────────────────── */}
-          {typeof state.step === 'number' && currentQuestion && (
-            <QuestionStep
-              question={currentQuestion}
-              stepNumber={state.step}
-              answers={state.answers}
-              nudge={nudge}
-              onSelect={handleSelect}
-              onFreeTextChange={handleFreeTextChange}
-              navStep={navStep}
-              navTotal={navTotal}
-              canContinue={canContinue}
-              onBack={() => dispatch({ type: 'BACK' })}
-              onContinue={handleContinue}
-            />
-          )}
-
-          {/* ── Email capture step ──────────────────────────────────────── */}
-          {state.step === 'email' && (
-            <EmailStep
-              name={state.name}
-              email={state.email}
-              submitting={state.submitting}
-              error={state.error}
-              navStep={navStep}
-              navTotal={navTotal}
-              canContinue={canContinue}
-              onBack={() => dispatch({ type: 'BACK' })}
-              onContinue={handleContinue}
-              onNameChange={(v) => dispatch({ type: 'SET_NAME', value: v })}
-              onEmailChange={(v) => dispatch({ type: 'SET_EMAIL', value: v })}
-              onTurnstileSuccess={(token) => dispatch({ type: 'SET_TURNSTILE', token })}
-            />
-          )}
-
+              {/* ── Email capture step ──────────────────────────────────── */}
+              {state.step === 'email' && (
+                <EmailStep
+                  name={state.name}
+                  email={state.email}
+                  submitting={state.submitting}
+                  error={state.error}
+                  navStep={navStep}
+                  navTotal={navTotal}
+                  navLabel={navLabel}
+                  canContinue={canContinue}
+                  onBack={() => dispatch({ type: 'BACK' })}
+                  onContinue={handleContinue}
+                  onNameChange={(v) => dispatch({ type: 'SET_NAME', value: v })}
+                  onEmailChange={(v) => dispatch({ type: 'SET_EMAIL', value: v })}
+                  onTurnstileSuccess={(token) => dispatch({ type: 'SET_TURNSTILE', token })}
+                />
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </main>
@@ -337,13 +351,13 @@ function IntroStep({ onStart }: { onStart: () => void }) {
 
 interface QuestionStepProps {
   question: (typeof QUIZ_QUESTIONS)[number]
-  stepNumber: number
   answers: Record<string, string>
   nudge: string | null
   onSelect: (questionId: string, optionId: string) => void
   onFreeTextChange: (questionId: string, value: string) => void
   navStep: number
   navTotal: number
+  navLabel: string
   canContinue: boolean
   onBack: () => void
   onContinue: () => void
@@ -365,13 +379,13 @@ const HELPER_TEXT: Record<string, string> = {
 
 function QuestionStep({
   question,
-  stepNumber,
   answers,
   nudge,
   onSelect,
   onFreeTextChange,
   navStep,
   navTotal,
+  navLabel,
   canContinue,
   onBack,
   onContinue,
@@ -433,8 +447,10 @@ function QuestionStep({
       <QuizProgressNav
         step={navStep}
         total={navTotal}
+        label={navLabel}
+        isLast={false}
         canContinue={canContinue}
-        onBack={stepNumber <= 1 ? onBack : onBack}
+        onBack={onBack}
         onContinue={onContinue}
       />
     </div>
@@ -450,6 +466,7 @@ interface EmailStepProps {
   error: string | null
   navStep: number
   navTotal: number
+  navLabel: string
   canContinue: boolean
   onBack: () => void
   onContinue: () => void
@@ -465,6 +482,7 @@ function EmailStep({
   error,
   navStep,
   navTotal,
+  navLabel,
   canContinue,
   onBack,
   onContinue,
@@ -472,6 +490,8 @@ function EmailStep({
   onEmailChange,
   onTurnstileSuccess,
 }: EmailStepProps) {
+  const [emailTouched, setEmailTouched] = useState(false)
+  const emailInvalid = emailTouched && email.trim().length > 0 && !isValidEmail(email)
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -511,10 +531,23 @@ function EmailStep({
             type="email"
             value={email}
             onChange={(e) => onEmailChange(e.target.value)}
+            onBlur={() => setEmailTouched(true)}
             placeholder="you@yourbusiness.com"
             autoComplete="email"
-            className="rounded-2xl border border-slate-200 px-5 py-3.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-600/20"
+            aria-invalid={emailInvalid}
+            aria-describedby={emailInvalid ? 'work-email-error' : undefined}
+            className={
+              'rounded-2xl border px-5 py-3.5 text-sm text-slate-800 outline-none placeholder:text-slate-400 focus:ring-2 ' +
+              (emailInvalid
+                ? 'border-red-300 focus:border-red-400 focus:ring-red-500/20'
+                : 'border-slate-200 focus:border-indigo-400 focus:ring-indigo-600/20')
+            }
           />
+          {emailInvalid && (
+            <p id="work-email-error" className="text-xs text-red-600">
+              Please enter a valid email address.
+            </p>
+          )}
         </div>
 
         {/* Honeypot — hidden from real users, never described in copy */}
@@ -551,6 +584,7 @@ function EmailStep({
       <QuizProgressNav
         step={navStep}
         total={navTotal}
+        label={navLabel}
         canContinue={canContinue && !submitting}
         onBack={onBack}
         onContinue={onContinue}

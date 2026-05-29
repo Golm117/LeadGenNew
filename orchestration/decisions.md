@@ -138,6 +138,18 @@ Entry format:
 - Date: 2026-05-29
 - Supersedes: —
 
+### D-018 — Assessment stepper UX fixes (Slice 5)
+- Question: What stepper issues ship as the "Slice 5" polish, after the remote run produced nothing?
+- Answer: Five self-contained fixes, hand-built in `app/assessment/stepper.tsx` + `components/ui/progress-indicator.tsx` (no data/scoring/submit changes):
+  1. **Removed single-choice auto-advance.** The `setTimeout(NEXT, 300)` raced the Continue button and could skip a question; the user now advances explicitly via Continue and can review their pick.
+  2. **Progress label corrected.** Was "Question N of 11" (the email step was counted as a question, reading "Question 11 of 11"). Now 10 question dots reading "Question N of 10"; the email step reads "Your results →". Added optional `label` + `isLast` overrides to `QuizProgressNav` so Q10 still shows "Continue" (not the finish button).
+  3. **Back is always available.** Was hidden on Q1; now Q1's Back returns to the intro.
+  4. **Step transition.** Added a ~150ms `AnimatePresence` fade/slide between steps, reduced-motion aware.
+  5. **Inline email validation.** Invalid email on blur shows "Please enter a valid email address." with a red border + `aria-invalid` / `aria-describedby`; clears once valid.
+- Decided by: Dave
+- Date: 2026-05-29
+- Supersedes: the failed Slice-5 RemoteTrigger run (zero output).
+
 ---
 
 ## Open / awaiting human
