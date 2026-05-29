@@ -192,22 +192,24 @@ all deps `done` is pullable in parallel by a matching-domain agent. All start `p
 ### Submit action & anti-spam
 
 ## T-140 — `submitAssessment` Server Action
-- status: pending
-- owner: unassigned
+- status: done
+- owner: submit-agent
 - domain: submit
 - depends-on: [T-111, T-121, T-122, T-150]
-- handoff-to: unassigned
+- handoff-to: frontend-agent
 - acceptance: Action runs validate(Zod) → verify Turnstile + reject honeypot → score → insert via service role → send result email (+Hot alert if band=hot) → return `{ token }`. Secrets server-only.
 - notes: PRD §9.2 skeleton. The funnel's spine; integrates data+scoring+email.
+- handoff-note: app/actions/submit-assessment.ts fully implemented. Exports `submitAssessment(payload: unknown): Promise<SubmitResult>` and `SubmitResult = { token: string } | { error: string }`. lib/insights.ts created (selectInsights). Pipeline: Zod validate → honeypot reject (pre-DB) → Turnstile verify (pre-DB, skip if TURNSTILE_SECRET_KEY absent/='test') → score → UUID token → Supabase insert (dry-run log if env vars absent per D-009) → selectInsights → sendResultEmail → sendHotLeadAlert (if hot) → return { token }. NEXT_PUBLIC_SITE_URL added to .env.example. All secrets server-only. npm run build: PASSED, TypeScript: clean. frontend-agent: wire T-132 submit call + redirect to /results/[token]; T-133 can import selectInsights from lib/insights.ts for server-side insight render.
 
 ## T-141 — Anti-spam hardening (Turnstile verify + honeypot)
-- status: pending
-- owner: unassigned
+- status: done
+- owner: submit-agent
 - domain: submit
 - depends-on: [T-140]
 - handoff-to: unassigned
 - acceptance: Turnstile token verified server-side against secret; honeypot-filled submissions rejected before any DB write. Failure paths return clean client errors.
 - notes: PRD §9.2 security.
+- handoff-note: Anti-spam integrated into T-140 (submit-assessment.ts). Honeypot: SubmissionSchema enforces max(0) + explicit pre-DB guard rejects non-empty value silently. Turnstile: POST to Cloudflare siteverify vs TURNSTILE_SECRET_KEY; failure = user-facing message, no internals; missing/='test' key = skip+log for dev. All error returns are { error: string } with user-safe copy only — no DB error details or stack traces leak to client.
 
 ### Analytics & attribution
 
