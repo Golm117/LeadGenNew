@@ -6,6 +6,7 @@ import type { Metadata } from 'next'
 import { selectInsights } from '@/lib/insights'
 import { ResultAnalytics } from '@/components/result-analytics'
 import { CtaButton, SecondaryLink } from '@/components/result-cta'
+import { ScopeRequestForm } from '@/components/scope-request-form'
 import type { Lead } from '@/lib/supabase-server'
 
 export const metadata: Metadata = {
@@ -224,18 +225,22 @@ function ResultPageContent({ lead, insights, firstName, band }: ResultPageConten
         )}
 
         {/* ── Primary CTA block ──────────────────────────────────────────── */}
-        <section className="mb-16 rounded-3xl border border-slate-100 bg-white p-8 shadow-sm">
+        <section id="scope-form" className="mb-16 rounded-3xl border border-slate-100 bg-white p-8 shadow-sm">
           <h2 className="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">
             {cfg.ctaHeading}
           </h2>
           <p className="mt-3 text-base leading-relaxed text-slate-600">{cfg.ctaBody}</p>
 
-          <CtaButton
-            href={band === 'hot' ? bookingUrl : '#'}
-            label={cfg.ctaLabel}
-            eventName={cfg.ctaEvent}
-            className={`mt-6 inline-flex w-full items-center justify-center rounded-xl px-6 py-3.5 text-base font-semibold shadow-lg transition-all hover:-translate-y-0.5 md:w-auto ${cfg.ctaStyle}`}
-          />
+          {band === 'warm' ? (
+            <ScopeRequestForm token={lead.token} />
+          ) : (
+            <CtaButton
+              href={band === 'hot' ? bookingUrl : '#'}
+              label={cfg.ctaLabel}
+              eventName={cfg.ctaEvent}
+              className={`mt-6 inline-flex w-full items-center justify-center rounded-xl px-6 py-3.5 text-base font-semibold shadow-lg transition-all hover:-translate-y-0.5 md:w-auto ${cfg.ctaStyle}`}
+            />
+          )}
 
           {cfg.fallback && (
             <p className="mt-4 text-sm text-slate-400">{cfg.fallback}</p>
@@ -253,7 +258,7 @@ function ResultPageContent({ lead, insights, firstName, band }: ResultPageConten
               eventName="cta_book_call_click"
             />
             <SecondaryLink
-              href="#"
+              href={band === 'warm' ? '#scope-form' : '#'}
               label="Request a scope outline →"
               isPrimary={band === 'warm'}
               eventName="cta_quote_click"
