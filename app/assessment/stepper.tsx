@@ -6,6 +6,7 @@ import { Turnstile } from '@marsidev/react-turnstile'
 import { QuizProgressNav } from '@/components/ui/progress-indicator'
 import { QUIZ_QUESTIONS } from '@/lib/quiz-config'
 import { submitAssessment } from '@/app/actions/submit-assessment'
+import { loadUtm } from '@/lib/utm'
 
 // ─── Local SubmitResult type (T-140 stub returns { token } or throws) ────────
 type SubmitResult = { token: string } | { error: string }
@@ -189,18 +190,25 @@ export function AssessmentStepper() {
     dispatch({ type: 'SET_SUBMITTING', value: true })
     dispatch({ type: 'SET_ERROR', error: null })
 
+    // Merge URL params (authoritative) with sessionStorage UTMs (fallback).
+    // URL params take precedence so a direct link never gets overwritten by
+    // a stale stored value. sessionStorage fills gaps when the user landed
+    // with UTMs but navigated away before starting the quiz.
+    const storedUtm = loadUtm()
+    const utm = {
+      utm_source: searchParams.get('utm_source') || storedUtm.utm_source || undefined,
+      utm_medium: searchParams.get('utm_medium') || storedUtm.utm_medium || undefined,
+      utm_campaign: searchParams.get('utm_campaign') || storedUtm.utm_campaign || undefined,
+      referrer: (typeof document !== 'undefined' ? document.referrer : undefined) || storedUtm.referrer || undefined,
+    }
+
     const payload = {
       answers: state.answers,
       name: state.name,
       email: state.email,
       turnstileToken: state.turnstileToken,
       honeypot: '',
-      utm: {
-        utm_source: searchParams.get('utm_source') ?? undefined,
-        utm_medium: searchParams.get('utm_medium') ?? undefined,
-        utm_campaign: searchParams.get('utm_campaign') ?? undefined,
-        referrer: typeof document !== 'undefined' ? document.referrer || undefined : undefined,
-      },
+      utm,
       variant: (searchParams.get('variant') as 'A' | 'B' | 'C') ?? undefined,
     }
 
@@ -227,6 +235,7 @@ export function AssessmentStepper() {
 
     // Success
     window.gtag?.('event', 'quiz_completed', {})
+    window.clarity?.('event', 'quiz_completed')
     router.push(`/results/${result.token}`)
   }, [state, currentQuestion, searchParams, router])
 
@@ -234,6 +243,7 @@ export function AssessmentStepper() {
   function handleStart() {
     const variant = searchParams.get('variant') ?? 'A'
     window.gtag?.('event', 'quiz_start', { variant })
+    window.clarity?.('event', 'quiz_start')
     dispatch({ type: 'START' })
   }
 

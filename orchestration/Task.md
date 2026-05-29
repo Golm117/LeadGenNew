@@ -217,22 +217,24 @@ all deps `done` is pullable in parallel by a matching-domain agent. All start `p
 ### Analytics & attribution
 
 ## T-160 — UTM capture → lead row
-- status: pending
-- owner: unassigned
+- status: done
+- owner: analytics-agent
 - domain: analytics
 - depends-on: [T-131, T-122, T-140]
 - handoff-to: unassigned
 - acceptance: UTM params captured on landing, carried through the quiz link, included in the submission payload, and persisted to `leads` (utm_source/medium/campaign, referrer). **Also capture the hero `variant` (D-011)** through the same path and store it on the lead row in `answers` JSONB (zero migration) for Hot-lead-yield-per-variant analysis.
 - notes: PRD §10. Variant tracking per D-011.
+- handoff-note: lib/utm.ts created — storeUtm/loadUtm client helpers (sessionStorage, UTM_KEY='golm_utm'). LandingAnalytics now accepts utm_source/medium/campaign props and calls storeUtm on mount with document.referrer; app/page.tsx passes all three UTM searchParams into LandingAnalytics. Assessment stepper merges URL query params (authoritative) with loadUtm() fallback so attribution survives navigation; referrer captured from document.referrer in both paths. answers._variant: data.variant ?? null verified on line 125 of submit-assessment.ts (D-011 confirmed).
 
 ## T-161 — Analytics events (GA4 + Clarity)
-- status: pending
-- owner: unassigned
+- status: done
+- owner: analytics-agent
 - domain: analytics
 - depends-on: [T-131, T-132, T-133]
 - handoff-to: unassigned
 - acceptance: Full event funnel fires: landing_view → quiz_start → quiz_question_answered → quiz_email_submitted → quiz_completed → result_view → cta_*_click. GA4 + Clarity installed. **`landing_view` and `quiz_start` carry a `variant` (A/B/C) dimension (D-011)** so start-rate per variant is measurable in GA4.
 - notes: PRD §10. Variant dimension per D-011.
+- handoff-note: GA4 + Clarity scripts added to app/layout.tsx via next/script (afterInteractive), guarded by NEXT_PUBLIC_GA4_MEASUREMENT_ID and NEXT_PUBLIC_CLARITY_PROJECT_ID — no scripts injected when env vars absent. types/gtag.d.ts global shim declares window.gtag/clarity/dataLayer (eliminates TS errors). All 9 events verified: landing_view+variant (landing-analytics.tsx), quiz_start+variant (hero.tsx + quiz-start-button.tsx + stepper.tsx handleStart), quiz_question_answered+step+qid (stepper handleSelect + handleContinue free-text path), quiz_email_submitted (stepper before submit), quiz_completed (stepper on success), result_view+band (result-analytics.tsx), cta_book_call_click / cta_quote_click / cta_newsletter_click (result-cta.tsx CtaButton + SecondaryLink). Clarity mirrors added to landing_view, quiz_start (all 3 call sites), quiz_completed, result_view. NEXT_PUBLIC_GA4_MEASUREMENT_ID + NEXT_PUBLIC_CLARITY_PROJECT_ID added to .env.example. npm run build: PASSED, TypeScript: clean.
 
 ### Hardening & ship
 

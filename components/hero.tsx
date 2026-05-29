@@ -96,7 +96,10 @@ export function Hero({ variant = 'A', assessmentHref = '/assessment' }: HeroProp
           <div className="mt-8 flex flex-col items-start gap-3">
             <a
               href={assessmentHref}
-              onClick={() => window.gtag?.('event', 'quiz_start', { variant })}
+              onClick={() => {
+                window.gtag?.('event', 'quiz_start', { variant })
+                window.clarity?.('event', 'quiz_start')
+              }}
               className="group inline-flex items-center rounded-xl bg-indigo-600 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/30"
             >
               Get your Custom Software Readiness Score — 2 min

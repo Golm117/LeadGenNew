@@ -33,8 +33,13 @@ export default async function LandingPage({
 
   return (
     <main>
-      {/* Analytics stub: fires landing_view with variant dimension on mount */}
-      <LandingAnalytics variant={variant} />
+      {/* Analytics: fires landing_view + stores UTMs in sessionStorage on mount */}
+      <LandingAnalytics
+        variant={variant}
+        utm_source={params.utm_source}
+        utm_medium={params.utm_medium}
+        utm_campaign={params.utm_campaign}
+      />
 
       {/* ── Hero (variant-driven headline + subhead) ─────────────────────── */}
       {/* Hero's CTA fires quiz_start internally (variant in scope) */}

@@ -3,9 +3,7 @@
 /**
  * CTA button that fires the `quiz_start` analytics event before navigating.
  * Used on the landing page bottom CTA. The Hero component's CTA uses the same
- * pattern via `onQuizStart` prop passed down from the landing page server component.
- *
- * analytics-agent (T-161) wires the GA4 installation; this stub is the hook.
+ * pattern via an inline onClick.
  */
 interface QuizStartButtonProps {
   assessmentHref: string
@@ -15,6 +13,7 @@ interface QuizStartButtonProps {
 export function QuizStartButton({ assessmentHref, variant }: QuizStartButtonProps) {
   function handleClick() {
     window.gtag?.('event', 'quiz_start', { variant })
+    window.clarity?.('event', 'quiz_start')
   }
 
   return (
