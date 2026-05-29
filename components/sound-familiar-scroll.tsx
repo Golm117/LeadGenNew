@@ -24,6 +24,8 @@ const LINES: { text: string; cls: string }[] = [
 
 const PLAIN = LINES.map((l) => l.text).join('\n')
 const TOTAL = LINES.reduce((n, l) => n + l.text.length + 1, 0)
+// Pre-loaded at rest: the full `> golm scan…` line + ~half of the `analyzing…` line.
+const PRELOAD = LINES[0].text.length + 1 + Math.round(LINES[1].text.length / 2)
 
 function Terminal() {
   const ctx = useContainerScroll()
@@ -32,8 +34,10 @@ function Terminal() {
   const reduce = useReducedMotion()
 
   // Scroll progress drives how many characters have been "typed".
-  const chars = useTransform(progress, [0.12, 0.82], [0, TOTAL], { clamp: true })
-  const [shown, setShown] = useState(reduce ? TOTAL : 0)
+  // Finish typing well before the tilt flattens (≈ scrollY 765 vs done at ≈ 1150),
+  // so the message is fully read while the card is still settling into place.
+  const chars = useTransform(progress, [0.12, 0.55], [PRELOAD, TOTAL], { clamp: true })
+  const [shown, setShown] = useState(reduce ? TOTAL : PRELOAD)
   useMotionValueEvent(chars, 'change', (v) => {
     if (!reduce) setShown(Math.round(v))
   })

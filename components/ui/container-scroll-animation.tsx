@@ -16,7 +16,13 @@ export const ContainerScroll = ({
   children: React.ReactNode
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: containerRef })
+  // Key progress to the section's top edge alone (not container+viewport), so the
+  // animation isn't pre-played at load and plays out over a short, deliberate window:
+  // progress 0 when the top sits ~31% down the viewport, 1 once it's ~51% above the top.
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ['start 0.31', 'start -0.51'],
+  })
   const reduce = useReducedMotion()
   const [isMobile, setIsMobile] = React.useState(false)
 
@@ -37,7 +43,7 @@ export const ContainerScroll = ({
     <ScrollProgressContext.Provider value={scrollYProgress}>
       <div
         ref={containerRef}
-        className="relative flex h-[60rem] items-center justify-center p-2 md:h-[70rem] md:p-20"
+        className="relative flex h-[41rem] items-center justify-center p-2 md:h-[51rem] md:p-20"
       >
         <div className="relative w-full py-10 md:py-40" style={{ perspective: '1000px' }}>
           <Header translate={translate}>{titleComponent}</Header>
