@@ -97,6 +97,20 @@ Entry format:
 - Decided by: Dave
 - Date: 2026-05-29
 - Supersedes: relaxes the "score-gauge only / hero motion = nothing else" flourish constraint in `content/landing.md` design notes, for the hero visual specifically. Rest of §9.3 restraint stands.
+- Follow-up (2026-05-29): interim hero polish committed — robot recolored toward **cyan/teal** via a CSS hue-rotate + centered screen-blend overlay (approximation only; the real recolor rides on the branded `.splinecode`, still Open), and the cursor-follow glow lifted to the section so it tracks across the **whole hero**.
+
+### D-014 — Page-2 questionnaire uses `QuizProgressNav` for stepper progress + nav
+- Question: What control drives the Page-2 quiz's progress indicator and Back/Continue navigation?
+- Answer: Use `components/ui/progress-indicator.tsx` (`QuizProgressNav`), re-skinned from the user-provided 21st.dev component.
+  - **Re-skinned to brand indigo** (`#4F46E5` family); original blue dropped.
+  - **Progress style = dots** (Dave's call): a row of dots that scales to N steps — filled/current dots indigo, current dot ring+scaled, upcoming slate-200; "Question X of N" caption, no percentage. (An earlier percentage-**bar** iteration was rejected in favour of dots.)
+  - **Generalized** from the source's 3 hardcoded steps to any N.
+  - **Presentational control**, gated by `canContinue` (Continue disabled until the current question is answered); props `step`, `total`, `canContinue`, `onBack`, `onContinue` (+ optional labels). Keeps the animated Back-expand / Continue-collapse transition + the finish `CircleCheck` state.
+  - **No new deps** — `framer-motion`, `lucide-react`, and `cn` are already present.
+  - `app/assessment/page.tsx` currently holds a **throwaway demo** (mock questions) to preview the control; T-132 replaces it with the real Appendix A wiring.
+- Decided by: Dave
+- Date: 2026-05-29
+- Supersedes: —
 
 ---
 

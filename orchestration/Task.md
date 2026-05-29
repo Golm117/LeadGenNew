@@ -177,8 +177,8 @@ all deps `done` is pullable in parallel by a matching-domain agent. All start `p
 - domain: frontend
 - depends-on: [T-130, T-120]
 - handoff-to: unassigned
-- acceptance: Client component stepper (useReducer), progress bar, one question/step, final email-capture step with name+email+honeypot+Turnstile widget. Calls `submitAssessment`, redirects to `/results/[token]`.
-- notes: PRD §5 page 2. Submit wiring depends on T-140.
+- acceptance: Client component stepper (useReducer), one question/step from `lib/quiz-config`, final email-capture step with name+email+honeypot+Turnstile widget. **Use `components/ui/progress-indicator.tsx` `QuizProgressNav` (D-014)** for the progress (dots) + Back/Continue nav — pass `step`/`total`/`canContinue` (gate until the current question is answered)/`onBack`/`onContinue`; do NOT rebuild it. Copy from `content/assessment.md`. Calls `submitAssessment`, redirects to `/results/[token]`.
+- notes: PRD §5 page 2. The current `app/assessment/page.tsx` is a **throwaway demo** (mock questions) — replace it with the real Appendix A wiring. Submit wiring depends on T-140.
 
 ## T-133 — Page 3 Result (`/results/[token]`)
 - status: pending
