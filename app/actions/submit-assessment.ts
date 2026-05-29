@@ -24,6 +24,7 @@ import { computeReadiness, computeIntent, bandFor, type Answers } from '@/lib/sc
 import { createSupabaseServer } from '@/lib/supabase-server'
 import { sendResultEmail, sendHotLeadAlert } from '@/lib/resend'
 import { selectInsights } from '@/lib/insights'
+import { captureException } from '@/lib/sentry'
 import ResultEmail from '@/emails/result-email'
 import HotLeadAlert from '@/emails/hot-lead-alert'
 import { createElement } from 'react'
@@ -39,6 +40,10 @@ export type SubmitResult = { token: string } | { error: string }
 // ---------------------------------------------------------------------------
 
 export async function submitAssessment(payload: unknown): Promise<SubmitResult> {
+  // Track email for Sentry context even if Zod parse fails (email may be in payload)
+  let parsedEmail: string | undefined
+
+  try {
 
   // -------------------------------------------------------------------------
   // STEP 1: Validate with Zod
@@ -49,6 +54,7 @@ export async function submitAssessment(payload: unknown): Promise<SubmitResult> 
     return { error: 'Invalid submission data.' }
   }
   const data = parsed.data
+  parsedEmail = data.email
 
   // -------------------------------------------------------------------------
   // STEP 2: Reject honeypot — BEFORE any DB write (T-141)
@@ -140,6 +146,7 @@ export async function submitAssessment(payload: unknown): Promise<SubmitResult> 
     const { error: dbError } = await supabase.from('leads').insert(leadRow)
     if (dbError) {
       console.error('[supabase] insert error:', dbError)
+      await captureException(dbError, { context: 'supabase_insert', email: data.email })
       return { error: 'Server error. Please try again.' }
     }
     supabaseAvailable = true
@@ -229,4 +236,12 @@ export async function submitAssessment(payload: unknown): Promise<SubmitResult> 
   // STEP 10: Return token — client redirects to /results/[token]
   // -------------------------------------------------------------------------
   return { token }
+
+  } catch (err) {
+    // Outer safety net: catches anything not already handled above.
+    // Calls Sentry (dry-run when SENTRY_DSN absent) then returns a clean user error.
+    // Never throw to the client — SubmitResult is always { token } | { error }.
+    await captureException(err, { context: 'submitAssessment', email: parsedEmail })
+    return { error: 'Server error. Please try again.' }
+  }
 }

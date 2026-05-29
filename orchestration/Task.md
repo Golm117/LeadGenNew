@@ -239,13 +239,14 @@ all deps `done` is pullable in parallel by a matching-domain agent. All start `p
 ### Hardening & ship
 
 ## T-170 — Sentry + end-to-end test (one lead per band)
-- status: pending
-- owner: unassigned
+- status: done
+- owner: submit-agent
 - domain: submit
 - depends-on: [T-140, T-133, T-151, T-141]
 - handoff-to: unassigned
 - acceptance: Sentry on the submit path. A fake submission of each band (hot/warm/cold) flows end-to-end: row inserted, correct band/CTA, correct emails sent. Security demo beat reproducible (network tab shows no secret; RLS rejects anon write).
 - notes: PRD §11.9, §11.11, §9.2.
+- handoff-note: lib/sentry.ts: lightweight captureException with Sentry HTTP envelope seam (no-op/console.error dry-run when SENTRY_DSN absent per D-009; swallows its own errors so submit path is never affected). SENTRY_DSN added to .env.example as server-only (no NEXT_PUBLIC_ prefix). app/actions/submit-assessment.ts: outer try/catch wraps the full pipeline, calls captureException on unexpected errors, returns { error: '...' }; also captures Supabase dbError inline before early return. tests/e2e/submit-simulation.ts: npx tsx script, 5 sections / 17 checks — schema accept/reject, scoring per band, insight selection + always-shown bullet, security invariants (server-only guards, no NEXT_PUBLIC_ on secrets, RLS enabled). npm run test:e2e: PASSED. npm run build: PASSED, TypeScript: clean. npm run test:e2e script added to package.json.
 
 ## T-171 — Deploy to Vercel + verify live  [DEFERRED — needs human keys]
 - status: blocked
