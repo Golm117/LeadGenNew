@@ -163,31 +163,34 @@ all deps `done` is pullable in parallel by a matching-domain agent. All start `p
 - handoff-note: globals.css replaces Geist/dark-mode with @theme inline PRD §9.3 tokens; layout.tsx uses Inter (--font-inter); button/card/section primitives in components/ui/. hero.tsx/splite.tsx untouched.
 
 ## T-131 — Page 1 Landing (`/`)
-- status: pending
-- owner: unassigned
+- status: done
+- owner: frontend-agent (Slice 3)
 - domain: frontend
 - depends-on: [T-130]
-- handoff-to: unassigned
+- handoff-to: analytics-agent
 - acceptance: Landing built from `orchestration/content/landing.md` (approved copy): all sections + dual CTA → `/assessment`, UTM passthrough. **Hero A/B/C (D-011):** render one of 3 hero blocks (A/B/C) by an assigned `variant`; assign randomly on first visit, persist in a cookie, and append `variant` to the `/assessment` link. Rest of page identical across variants. **Hero visual = interactive 3D Spline scene re-skinned to light/indigo brand (D-013)**: lazy-loaded (`React.lazy`+`<Suspense>`), client-only, cursor-follow indigo glow; placeholder robot scene until a branded `.splinecode` is commissioned; hand-built `cn` util + thin `SplineScene` wrapper, NOT shadcn. The 3D visual + CTA are shared across A/B/C; only headline+subhead vary. `landing_view`/`quiz_start` hooks carry `variant`.
-- notes: PRD §5 page 1, §9.3. Copy + design in content/landing.md. Mock proof numbers (D-012). Hero 3D per D-013. A working local prototype exists on dev (see notepad) — formalize it here.
+- notes: PRD §5 page 1, §9.3. Copy + design in content/landing.md. Mock proof numbers (D-012). Hero 3D per D-013.
+- handoff-note: app/page.tsx (RSC, async searchParams + cookies): full landing from landing.md. proxy.ts (renamed from middleware.ts per Next.js 16 convention) assigns hero_variant cookie randomly on first visit. Hero accepts variant+assessmentHref props. components/landing-analytics.tsx fires landing_view+variant. components/quiz-start-button.tsx fires quiz_start+variant on bottom CTA click. Hero CTA fires quiz_start inline. All sections: problem, GOLM pitch, proof strip (D-012 mock), what-you-get, bottom CTA. analytics-agent wires T-160/161.
 
 ## T-132 — Page 2 Assessment (`/assessment`)
-- status: pending
-- owner: unassigned
+- status: done
+- owner: frontend-agent (Slice 3)
 - domain: frontend
 - depends-on: [T-130, T-120]
-- handoff-to: unassigned
+- handoff-to: submit-agent
 - acceptance: Client component stepper (useReducer), one question/step from `lib/quiz-config`, final email-capture step with name+email+honeypot+Turnstile widget. **Use `components/ui/progress-indicator.tsx` `QuizProgressNav` (D-014)** for the progress (dots) + Back/Continue nav — pass `step`/`total`/`canContinue` (gate until the current question is answered)/`onBack`/`onContinue`; do NOT rebuild it. Copy from `content/assessment.md`. Calls `submitAssessment`, redirects to `/results/[token]`.
-- notes: PRD §5 page 2. The current `app/assessment/page.tsx` is a **throwaway demo** (mock questions) — replace it with the real Appendix A wiring. Submit wiring depends on T-140.
+- notes: PRD §5 page 2. Throwaway demo replaced with real Appendix A wiring.
+- handoff-note: app/assessment/page.tsx (server wrapper, exports metadata, wraps in Suspense for useSearchParams). app/assessment/stepper.tsx ('use client', useReducer state machine, 10 QUIZ_QUESTIONS from lib/quiz-config.ts, QuizProgressNav D-014, auto-advance 300ms on single-choice, milestone nudges Q4/Q7/Q9, email capture step, honeypot, Turnstile via @marsidev/react-turnstile, calls submitAssessment+catches throws, redirects to /results/[token]). Analytics hooks: quiz_start, quiz_question_answered, quiz_email_submitted, quiz_completed. submit-agent T-140 implements submitAssessment for end-to-end.
 
 ## T-133 — Page 3 Result (`/results/[token]`)
-- status: pending
-- owner: unassigned
+- status: done
+- owner: frontend-agent (Slice 3)
 - domain: frontend
 - depends-on: [T-130, T-111, T-121]
-- handoff-to: unassigned
+- handoff-to: analytics-agent
 - acceptance: RSC reads lead by `token` server-side; renders Readiness Score + 2–4 tailored insight bullets; routes CTA emphasis by band (Hot=book call, Warm=quote, Cold=newsletter). Result events hooked.
 - notes: PRD §5 page 3, §6.
+- handoff-note: app/results/[token]/page.tsx (RSC, async params, try/catch around createSupabaseServer for D-009 dev env). lib/insights.ts created: selectInsights(answers, band) → string[] per results.md thresholds. components/result-analytics.tsx fires result_view+band on mount. components/result-cta.tsx fires cta_*_click on CTA clicks. Not-found + error states rendered gracefully. Band-matched: score chip (indigo/amber/slate), headline, framing, 2-4 insight bullets, primary CTA, secondary actions strip. analytics-agent wires T-161.
 
 ### Submit action & anti-spam
 
