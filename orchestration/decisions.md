@@ -112,15 +112,40 @@ Entry format:
 - Date: 2026-05-29
 - Supersedes: —
 
+### D-015 — Domain: dedicated subdomain `apply.golm.ca`
+- Question: What domain does the funnel ship on (resolves Q-04)?
+- Answer: A **dedicated subdomain `apply.golm.ca`** (not a golm.ca subpath, not the interim `*.vercel.app`). Keeps the funnel isolated from the main marketing site, gives clean analytics/cookie scoping, and is the canonical base for SEO/OG and email links.
+  - **Build impact:** `NEXT_PUBLIC_SITE_URL=https://apply.golm.ca` (no trailing slash); canonical + OG URLs and the result-page links in emails resolve against it; the Resend from-address rides on a verified `golm.ca` (or `apply.golm.ca`) domain. Add `apply.golm.ca` to Vercel > Domains and to the Turnstile widget's allowed domains.
+  - Still build-only under D-009 — no DNS/Vercel/Resend provisioning by agents; the human wires the live subdomain at deploy.
+- Decided by: Dave
+- Date: 2026-05-29
+- Supersedes: Q-04 interim (`*.vercel.app`) in D-004..008.
+
+### D-016 — Warm-band CTA: inline scope-request form on the results page
+- Question: What does the Warm-band primary CTA do (overrides `content/results.md` Open-Q1)?
+- Answer: An **inline scope-request form rendered directly on the results page** (not a stub link, not a separate page). The Warm lead fills it in place and submits without leaving `/results/[token]`.
+  - **Fields:** business type, primary pain, team/operation size, timeline. On submit, a Server Action writes them into the existing `answers` JSONB on the lead row (keyed e.g. `answers._scope_request`) — **no migration / no new column** (consistent with the D-011 zero-migration pattern).
+  - **Current state:** the Warm CTA shipped as a stub `href='#'` link ("Request a free scope outline →"); this decision makes it real. The build is **net-new cross-cutting work** (frontend form + submit-action handler + JSONB write) and will be delivered as a follow-up slice (Slice 4) via RemoteTrigger, not hand-built by the orchestrator.
+  - Hot band keeps the `BOOKING_URL` booking CTA; Cold band keeps the newsletter button (see D-017). Only the Warm primary CTA changes.
+- Decided by: Dave
+- Date: 2026-05-29
+- Supersedes: `content/results.md` Open-Q1 (Warm CTA destination undecided).
+
+### D-017 — Cold-band newsletter CTA: presentational button for v1
+- Question: Does the Cold-band newsletter CTA persist a signup?
+- Answer: **Presentational button only for v1** — no schema column, no anon write. RLS is locked (zero anon policies), so a client-side newsletter write would be rejected anyway, and adding a real signup path is out of scope for v1. The button can link to an external list/newsletter later; for now it is a styled CTA with no persistence.
+- Decided by: Dave
+- Date: 2026-05-29
+- Supersedes: —
+
 ---
 
 ## Open / awaiting human
 
 Still needs a human call **before launch** (v1 builds on interim defaults per D-004..008):
 
-- **Q-02 — Booking tool**: Cal.com / Calendly / custom embed (plain link until then).
-- **Q-04 — Domain**: golm.ca subpath vs dedicated domain (vercel.app until then).
+- **Q-02 — Booking tool**: Cal.com / Calendly / custom embed (plain `BOOKING_URL` link until then). Dave: decide later — not a blocker for v1 build.
 - **Credibility numbers**: replace D-012 mock figures with real ones before launch.
 - **Branded Spline scene (D-013)**: commission a custom indigo/brand `.splinecode` scene to replace the placeholder robot demo before launch.
 
-_(Q-01 resolved by D-010 — fully agnostic.)_
+_(Q-01 resolved by D-010 — fully agnostic. Q-04 resolved by D-015 — `apply.golm.ca`.)_

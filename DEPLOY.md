@@ -138,9 +138,16 @@ redeployment) when the real link is ready. No code change needed.
 
 ---
 
-## Domain (v1 interim)
+## Domain — `apply.golm.ca` (D-015)
 
-The funnel ships on `*.vercel.app` for v1. A custom domain (golm.ca
-subpath or dedicated) is pending human decision (Q-04 in
-`orchestration/decisions.md`). When the domain is decided, add it in
-Vercel > Domains and update Turnstile to include the new domain.
+The funnel ships on the dedicated subdomain **`apply.golm.ca`** (decided in
+D-015, `orchestration/decisions.md`; supersedes the interim `*.vercel.app`).
+
+1. After the first Vercel deploy, go to **Vercel > Project > Settings > Domains**
+   and add `apply.golm.ca`. Vercel shows the DNS record to create.
+2. At your DNS provider for `golm.ca`, add the `CNAME` (or `A`/`ALIAS`) record
+   Vercel specifies for the `apply` subdomain. Wait for it to verify.
+3. Set `NEXT_PUBLIC_SITE_URL=https://apply.golm.ca` (no trailing slash) in
+   Vercel env vars — result-email links, canonical, and OG URLs resolve against it.
+4. Add `apply.golm.ca` to the **Turnstile** widget's allowed domains (§3).
+5. The Resend from-address (§2) must sit on a verified `golm.ca` domain.
