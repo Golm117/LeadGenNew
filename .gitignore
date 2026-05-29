@@ -27,5 +27,8 @@ Thumbs.db
 # Vercel
 .vercel
 
+# Supabase CLI temp/cache
+supabase/.temp/
+
 # Claude Code worktree scratch directories
 .claude/worktrees/
