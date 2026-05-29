@@ -6,7 +6,7 @@ import { SplineScene } from '@/components/ui/splite'
 import { cn } from '@/lib/utils'
 
 // Placeholder Spline scene (D-013): swap for a branded indigo .splinecode before launch.
-const SCENE = 'https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode'
+const SCENE = 'https://prod.spline.design/LgR4arZTQ3QN1vTR/scene.splinecode'
 
 // Hero copy per A/B/C variant (D-011). Only headline + subhead differ across variants.
 // The 3D visual and CTA are shared (per D-013, D-011 intent).
@@ -110,13 +110,7 @@ export function Hero({ variant = 'A', assessmentHref = '/assessment' }: HeroProp
 
         {/* Right — interactive 3D (re-skinned indigo panel, not black) */}
         <div className="relative h-[360px] overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-700 via-indigo-800 to-slate-900 shadow-2xl shadow-indigo-900/30 md:h-[480px]">
-          {/* Robot recolor (D-013 interim): CSS hue-shift toward cyan/teal until the branded .splinecode lands */}
-          <SplineScene
-            scene={SCENE}
-            className="relative z-10 h-full w-full [filter:hue-rotate(150deg)_saturate(1.6)]"
-          />
-          {/* cyan/teal tint overlay — screen-blend; centred so panel corners stay indigo */}
-          <div className="pointer-events-none absolute inset-0 z-[15] mix-blend-screen bg-[radial-gradient(circle_at_50%_42%,rgba(34,211,238,0.6),rgba(20,184,166,0.25)_45%,transparent_68%)]" />
+          <SplineScene scene={SCENE} className="relative z-10 h-full w-full" />
           {/* score chip — gauge motif retained as secondary element (D-013) */}
           <div className="absolute bottom-5 left-5 z-20 rounded-2xl bg-white/95 px-4 py-3 shadow-lg backdrop-blur">
             <div className="text-2xl font-bold text-indigo-600">78 / 100</div>
