@@ -68,7 +68,7 @@ export function Hero({ variant = 'A', assessmentHref = '/assessment' }: HeroProp
       onMouseLeave={() => setHovered(false)}
       className="relative overflow-hidden bg-gradient-to-b from-indigo-50/60 to-white"
     >
-      {/* cursor-follow glow — tracks across the whole hero section */}
+      {/* base cursor-follow glow — shows across the light hero background */}
       <motion.div
         className={cn(
           'pointer-events-none absolute z-0 rounded-full blur-3xl transition-opacity duration-300',
@@ -80,9 +80,42 @@ export function Hero({ variant = 'A', assessmentHref = '/assessment' }: HeroProp
       {/* soft brand gradient splash — only flourish on the page (§9.3) */}
       <div className="pointer-events-none absolute -top-24 left-1/2 z-0 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-indigo-200/40 blur-3xl" />
 
-      <div className="relative z-10 mx-auto grid max-w-6xl grid-cols-1 items-stretch gap-8 px-6 py-16 md:grid-cols-2 md:py-24">
-        {/* Left — copy (variant-driven headline + subhead) */}
-        <div className="flex flex-col justify-center">
+      <div className="relative mx-auto flex min-h-[540px] max-w-6xl items-center px-6 py-16 md:min-h-[620px] md:py-24">
+        {/* Robot — right-anchored full-bleed visual; edges feathered to melt into the hero */}
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 z-0 h-full w-full md:pointer-events-auto md:w-[64%]"
+          style={{
+            WebkitMaskImage:
+              'radial-gradient(ellipse 62% 78% at 60% 50%, #000 42%, transparent 76%)',
+            maskImage:
+              'radial-gradient(ellipse 62% 78% at 60% 50%, #000 42%, transparent 76%)',
+          }}
+        >
+          <SplineScene scene={SCENE} className="h-full w-full" />
+        </div>
+
+        {/* glow re-applied over the robot area (the opaque visual occludes the base glow) */}
+        <motion.div
+          className={cn(
+            'pointer-events-none absolute z-[1] rounded-full blur-3xl mix-blend-screen transition-opacity duration-300',
+            'bg-[radial-gradient(circle_at_center,rgba(129,140,248,0.6),transparent_70%)]',
+            hovered ? 'opacity-100' : 'opacity-0'
+          )}
+          style={{ width: size, height: size, left, top }}
+        />
+
+        {/* legibility scrim — only on mobile, where the robot sits full-width behind the copy;
+            transparent on desktop so the cursor glow is never muted */}
+        <div className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-r from-indigo-50 via-indigo-50/70 to-transparent md:from-transparent md:via-transparent md:to-transparent" />
+
+        {/* score chip — outcome preview (D-013), anchored to the robot */}
+        <div className="absolute bottom-10 right-6 z-10 rounded-2xl bg-white/95 px-4 py-3 shadow-lg shadow-indigo-900/10 backdrop-blur md:right-12">
+          <div className="text-2xl font-bold text-indigo-600">78 / 100</div>
+          <div className="text-xs font-medium text-slate-500">Strong fit</div>
+        </div>
+
+        {/* Copy — overlaid on top of the visual */}
+        <div className="relative z-10 flex max-w-xl flex-col">
           <span className="mb-4 inline-flex w-fit items-center rounded-full border border-indigo-200 bg-white/70 px-3 py-1 text-xs font-medium text-indigo-700">
             Custom Software Readiness
           </span>
@@ -105,16 +138,6 @@ export function Hero({ variant = 'A', assessmentHref = '/assessment' }: HeroProp
               Get your Custom Software Readiness Score — 2 min
             </a>
             <p className="text-sm text-slate-500">Free · 2 minutes · Results instantly</p>
-          </div>
-        </div>
-
-        {/* Right — interactive 3D (re-skinned indigo panel, not black) */}
-        <div className="relative h-[360px] overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-700 via-indigo-800 to-slate-900 shadow-2xl shadow-indigo-900/30 md:h-[480px]">
-          <SplineScene scene={SCENE} className="relative z-10 h-full w-full" />
-          {/* score chip — gauge motif retained as secondary element (D-013) */}
-          <div className="absolute bottom-5 left-5 z-20 rounded-2xl bg-white/95 px-4 py-3 shadow-lg backdrop-blur">
-            <div className="text-2xl font-bold text-indigo-600">78 / 100</div>
-            <div className="text-xs font-medium text-slate-500">Strong fit</div>
           </div>
         </div>
       </div>
