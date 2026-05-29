@@ -34,9 +34,9 @@ function Terminal() {
   const reduce = useReducedMotion()
 
   // Scroll progress drives how many characters have been "typed".
-  // Finish typing well before the tilt flattens (≈ scrollY 765 vs done at ≈ 1150),
-  // so the message is fully read while the card is still settling into place.
-  const chars = useTransform(progress, [0.12, 0.55], [PRELOAD, TOTAL], { clamp: true })
+  // Type from the very first scroll (progress 0 = scrollY 0) and finish well before
+  // the tilt flattens, so the message is fully read while the card is still settling.
+  const chars = useTransform(progress, [0, 0.55], [PRELOAD, TOTAL], { clamp: true })
   const [shown, setShown] = useState(reduce ? TOTAL : PRELOAD)
   useMotionValueEvent(chars, 'change', (v) => {
     if (!reduce) setShown(Math.round(v))
