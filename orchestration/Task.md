@@ -159,8 +159,8 @@ all deps `done` is pullable in parallel by a matching-domain agent. All start `p
 - domain: frontend
 - depends-on: [T-130]
 - handoff-to: unassigned
-- acceptance: Landing built from `orchestration/content/landing.md` (approved copy): all sections + dual CTA → `/assessment`, UTM passthrough. **Hero A/B/C (D-011):** render one of 3 hero blocks (A/B/C) by an assigned `variant`; assign randomly on first visit, persist in a cookie, and append `variant` to the `/assessment` link. Rest of page identical across variants. Score-gauge hero visual. `landing_view`/`quiz_start` hooks carry `variant`.
-- notes: PRD §5 page 1, §9.3. Copy + design in content/landing.md. Mock proof numbers (D-012).
+- acceptance: Landing built from `orchestration/content/landing.md` (approved copy): all sections + dual CTA → `/assessment`, UTM passthrough. **Hero A/B/C (D-011):** render one of 3 hero blocks (A/B/C) by an assigned `variant`; assign randomly on first visit, persist in a cookie, and append `variant` to the `/assessment` link. Rest of page identical across variants. **Hero visual = interactive 3D Spline scene re-skinned to light/indigo brand (D-013)**: lazy-loaded (`React.lazy`+`<Suspense>`), client-only, cursor-follow indigo glow; placeholder robot scene until a branded `.splinecode` is commissioned; hand-built `cn` util + thin `SplineScene` wrapper, NOT shadcn. The 3D visual + CTA are shared across A/B/C; only headline+subhead vary. `landing_view`/`quiz_start` hooks carry `variant`.
+- notes: PRD §5 page 1, §9.3. Copy + design in content/landing.md. Mock proof numbers (D-012). Hero 3D per D-013. A working local prototype exists on dev (see notepad) — formalize it here.
 
 ## T-132 — Page 2 Assessment (`/assessment`)
 - status: pending

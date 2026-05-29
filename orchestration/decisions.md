@@ -87,6 +87,17 @@ Entry format:
 - Date: 2026-05-29
 - Supersedes: —
 
+### D-013 — Hero gets an interactive 3D (Spline) visual, re-skinned to brand
+- Question: How to add visual appeal to the hero beyond the static score gauge?
+- Answer: The hero **right-side visual becomes an interactive 3D Spline scene**, re-skinned to the light/indigo brand — NOT the black-card demo. It becomes the hero focal point (flanks/replaces the static score gauge).
+  - **Perf is the known tradeoff** (Spline runtime + WebGL hurts mobile LCP on a conversion funnel). Mitigate: `React.lazy` + `<Suspense>` fallback, client-only, deferred/lazy load; keep the rest of the page light and asset-free.
+  - **Scene asset:** the generic Spline robot is a **placeholder only**. A branded `.splinecode` scene (indigo, an ops/abstract motif that fits GOLM) must be commissioned before launch — tracked in Open.
+  - **Project is not shadcn:** integrate hand-built — add a `cn` util + a thin `SplineScene` wrapper; do NOT pull in shadcn's card/token system. Deps: `@splinetool/react-spline`, `@splinetool/runtime`, `framer-motion` (cursor-follow indigo glow).
+  - **A/B/C unaffected (D-011):** only headline+subhead vary across A/B/C; the 3D visual + CTA are shared, so the test stays measurable.
+- Decided by: Dave
+- Date: 2026-05-29
+- Supersedes: relaxes the "score-gauge only / hero motion = nothing else" flourish constraint in `content/landing.md` design notes, for the hero visual specifically. Rest of §9.3 restraint stands.
+
 ---
 
 ## Open / awaiting human
@@ -96,5 +107,6 @@ Still needs a human call **before launch** (v1 builds on interim defaults per D-
 - **Q-02 — Booking tool**: Cal.com / Calendly / custom embed (plain link until then).
 - **Q-04 — Domain**: golm.ca subpath vs dedicated domain (vercel.app until then).
 - **Credibility numbers**: replace D-012 mock figures with real ones before launch.
+- **Branded Spline scene (D-013)**: commission a custom indigo/brand `.splinecode` scene to replace the placeholder robot demo before launch.
 
 _(Q-01 resolved by D-010 — fully agnostic.)_
