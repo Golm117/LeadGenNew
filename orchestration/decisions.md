@@ -40,6 +40,17 @@ Entry format:
 - Date: 2026-05-29
 - Supersedes: —
 
+### D-009 — No external accounts yet: build code-complete, human plugs in keys
+- Question: Do Supabase / Vercel / Resend projects exist for the build to provision against?
+- Answer: **No projects exist.** Agents build every system **code-complete** with env-var placeholders and clean integration seams, but must **NOT create live accounts/projects** or call paid/external APIs. The human plugs in API keys/projects as needed. Specifically:
+  - **Supabase (T-110/111):** write the migration SQL + server client expecting env vars; do NOT apply to a live project. Migration must be ready to `supabase db push` once a project exists.
+  - **Vercel (T-101/171):** produce a `.env.example` (all PRD §9.2 vars, correctly scoped) and a `DEPLOY.md` runbook; do NOT create a live Vercel project. Deploy (T-171) is **deferred** until the human provides keys.
+  - **Resend (T-150/151):** build the client + templates reading `RESEND_API_KEY`; do NOT send live mail or verify a domain. Use a preview/dry-run path for testing.
+  - **Turnstile:** code the widget + server verify against env keys; works once real keys are provided.
+- Decided by: Dave
+- Date: 2026-05-29
+- Supersedes: —
+
 ### D-004 through D-008 — PRD §12 items: adopt PRD interim defaults for v1
 - Question: How to handle the five PRD §12 "Decisions to Confirm" for the v1 build?
 - Answer: Build v1 on the PRD's stated interim defaults (below). These are not blockers; the deeper choices remain flagged for human sign-off **before launch** (see Open section).

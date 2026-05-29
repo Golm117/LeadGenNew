@@ -65,22 +65,22 @@ all deps `done` is pullable in parallel by a matching-domain agent. All start `p
 - acceptance: `npm run dev` serves an App Router app; Tailwind compiles; lucide-react installed; npm lockfile committed. File tree matches PRD §9.2.
 - notes: PRD §11.1, §9.1. TypeScript, no component library.
 
-## T-101 — Vercel project + environment variables
+## T-101 — Environment contract (.env.example) + DEPLOY runbook
 - status: pending
 - owner: unassigned
 - domain: infra
 - depends-on: [T-100]
 - handoff-to: unassigned
-- acceptance: Vercel project linked; all PRD §9.2 env vars defined (placeholders ok) with correct public/server scoping; preview build succeeds.
-- notes: PRD §9.2 env table. Secrets server-only.
+- acceptance: `.env.example` documents every PRD §9.2 var with correct public/server scoping and a one-line purpose; `DEPLOY.md` runbook lists the steps to provision Vercel + plug in keys. NO live Vercel project created (D-009).
+- notes: Build-only. Secrets server-only. Live deploy is T-171, deferred.
 
-## T-110 — Supabase `leads` table + RLS migration
+## T-110 — Supabase `leads` migration SQL (written, not applied)
 - status: pending
 - owner: unassigned
 - domain: data
 - depends-on: [T-100]
 - handoff-to: unassigned
-- acceptance: Migration creates `leads` exactly per PRD §7 (columns, defaults, band check, indexes); RLS enabled with NO anon/authenticated policies. Applied via Supabase CLI.
+- acceptance: A Supabase CLI migration file creates `leads` exactly per PRD §7 (columns, defaults, band check, indexes); RLS enabled with NO anon/authenticated policies. Ready to `supabase db push` once a project exists. NOT applied to a live project (D-009).
 - notes: PRD §7. RLS-locked; all access server-side via service role.
 
 ## T-111 — Server Supabase client (service role)
@@ -129,7 +129,7 @@ all deps `done` is pullable in parallel by a matching-domain agent. All start `p
 - domain: email
 - depends-on: [T-100, T-101]
 - handoff-to: unassigned
-- acceptance: `lib/resend.ts` exports a server-only Resend client + typed send helpers. Key never reaches client.
+- acceptance: `lib/resend.ts` exports a server-only Resend client (reads `RESEND_API_KEY`) + typed send helpers, with a dry-run/preview path so it works before a key exists. Key never reaches client. No live send / no domain verification (D-009).
 - notes: PRD §8, §9.2.
 
 ## T-151 — React Email templates (result + Hot alert)
@@ -230,11 +230,11 @@ all deps `done` is pullable in parallel by a matching-domain agent. All start `p
 - acceptance: Sentry on the submit path. A fake submission of each band (hot/warm/cold) flows end-to-end: row inserted, correct band/CTA, correct emails sent. Security demo beat reproducible (network tab shows no secret; RLS rejects anon write).
 - notes: PRD §11.9, §11.11, §9.2.
 
-## T-171 — Deploy to Vercel + verify live
-- status: pending
-- owner: unassigned
+## T-171 — Deploy to Vercel + verify live  [DEFERRED — needs human keys]
+- status: blocked
+- owner: human (Dave)
 - domain: infra
 - depends-on: [T-170, T-160, T-161, T-101]
-- handoff-to: unassigned
+- handoff-to: human
 - acceptance: Production deploy on `*.vercel.app`; full funnel verified live end-to-end; env vars set in Vercel (not bundle).
-- notes: PRD §11.11. Domain remains interim per Q-04.
+- notes: BLOCKED on D-009 — no Vercel/Supabase/Resend projects yet. Agents complete everything else code-side and leave a DEPLOY.md runbook (T-101). Unblock when Dave provisions accounts + plugs in keys. Domain interim per Q-04.
