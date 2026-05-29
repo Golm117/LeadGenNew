@@ -67,91 +67,100 @@ all deps `done` is pullable in parallel by a matching-domain agent. All start `p
 - handoff-note: Next.js 16.2.6 scaffolded at repo root with TypeScript, Tailwind v4, lucide-react v1.17.0, npm lockfile. All PRD §9.2 stubs created: `app/page.tsx`, `app/assessment/page.tsx`, `app/results/[token]/page.tsx`, `app/actions/submit-assessment.ts`, `lib/quiz-config.ts`, `lib/scoring.ts`, `lib/supabase-server.ts`, `lib/resend.ts`, `emails/.gitkeep`. `npm run build` passes (5 static/dynamic routes generated). T-101, T-110, T-120, T-130, T-150 are now unblocked.
 
 ## T-101 — Environment contract (.env.example) + DEPLOY runbook
-- status: pending
-- owner: unassigned
+- status: done
+- owner: infra-agent (Slice 2)
 - domain: infra
 - depends-on: [T-100]
 - handoff-to: unassigned
 - acceptance: `.env.example` documents every PRD §9.2 var with correct public/server scoping and a one-line purpose; `DEPLOY.md` runbook lists the steps to provision Vercel + plug in keys. NO live Vercel project created (D-009).
 - notes: Build-only. Secrets server-only. Live deploy is T-171, deferred.
+- handoff-note: `.env.example` and `DEPLOY.md` created at repo root. All 7 PRD §9.2 vars documented with scoping notes and safe placeholders. DEPLOY.md covers Supabase/Resend/Turnstile/Vercel provisioning steps, env var table, post-deploy checklist, and BOOKING_URL launch note.
 
 ## T-110 — Supabase `leads` migration SQL (written, not applied)
-- status: pending
-- owner: unassigned
+- status: done
+- owner: data-agent (Slice 2)
 - domain: data
 - depends-on: [T-100]
 - handoff-to: unassigned
 - acceptance: A Supabase CLI migration file creates `leads` exactly per PRD §7 (columns, defaults, band check, indexes); RLS enabled with NO anon/authenticated policies. Ready to `supabase db push` once a project exists. NOT applied to a live project (D-009).
 - notes: PRD §7. RLS-locked; all access server-side via service role.
+- handoff-note: `supabase/migrations/20260529000000_leads.sql` — verbatim PRD §7. RLS enabled, zero policies. Composite index on (intent_band, created_at desc); unique index on token. Ready for `supabase db push`.
 
 ## T-111 — Server Supabase client (service role)
-- status: pending
-- owner: unassigned
+- status: done
+- owner: data-agent (Slice 2)
 - domain: data
 - depends-on: [T-100, T-110]
 - handoff-to: unassigned
 - acceptance: `lib/supabase-server.ts` exports a service-role client usable only server-side; never imported into client components.
 - notes: PRD §9.2. `@supabase/supabase-js`, no ORM.
+- handoff-note: `lib/supabase-server.ts` — `import 'server-only'` guard, `createSupabaseServer()` factory, `Lead` type. submit-agent and frontend-agent can import both.
 
 ### Scoring & config
 
 ## T-120 — Typed quiz config (Appendix A)
-- status: pending
-- owner: unassigned
+- status: done
+- owner: scoring-agent (Slice 2)
 - domain: scoring
 - depends-on: [T-100]
 - handoff-to: unassigned
 - acceptance: `lib/quiz-config.ts` encodes all Appendix A questions, options, and point values as typed data; readiness vs qualifier questions distinguished.
 - notes: PRD Appendix A, §5 page 2. Ship verbatim per D-006.
+- handoff-note: `lib/quiz-config.ts` — all 10 Appendix A questions typed. READINESS_MAX=100, INTENT_MAX=100 (computed dynamically). Q6 is free-text/0pts. option ids follow pattern q{N}_{a,b,c,d}.
 
 ## T-121 — Scoring functions + bands
-- status: pending
-- owner: unassigned
+- status: done
+- owner: scoring-agent (Slice 2)
 - domain: scoring
 - depends-on: [T-120]
 - handoff-to: unassigned
 - acceptance: `lib/scoring.ts` exports `computeReadiness` (0–100 normalized), `computeIntent` (0–100), `bandFor` (hot≥65/warm35–64/cold<35). Unit-testable pure functions.
 - notes: PRD §6 weights + Appendix A.
+- handoff-note: `lib/scoring.ts` — pure functions, `Answers` type exported. `bandFor` thresholds: hot>=65, warm>=35, cold<35. Free-text Q6 resolves to 0 pts via guard in resolvePoints.
 
 ## T-122 — Zod submission schema + shared types
-- status: pending
-- owner: unassigned
+- status: done
+- owner: scoring-agent (Slice 2)
 - domain: scoring
 - depends-on: [T-120]
 - handoff-to: unassigned
 - acceptance: One Zod schema validates the submission payload (answers, name, email, turnstile token, honeypot, utm) and types the answers shared across config/scoring/action.
 - notes: PRD §9.1, §9.2 skeleton step 1.
+- handoff-note: `lib/schema.ts` — SubmissionSchema, SubmissionPayload, UtmData, AnswersSchema. honeypot max(0) rejects bots. variant field per D-011. Answers re-exported from scoring.ts.
 
 ### Email
 
 ## T-150 — Resend client + send helpers
-- status: pending
-- owner: unassigned
+- status: done
+- owner: email-agent (Slice 2)
 - domain: email
 - depends-on: [T-100, T-101]
 - handoff-to: unassigned
 - acceptance: `lib/resend.ts` exports a server-only Resend client (reads `RESEND_API_KEY`) + typed send helpers, with a dry-run/preview path so it works before a key exists. Key never reaches client. No live send / no domain verification (D-009).
 - notes: PRD §8, §9.2.
+- handoff-note: `lib/resend.ts` — server-only, dry-run when RESEND_API_KEY absent/'dry-run'. sendResultEmail + sendHotLeadAlert exported. Caller constructs ReactElement and passes as emailComponent.
 
 ## T-151 — React Email templates (result + Hot alert)
-- status: pending
-- owner: unassigned
+- status: done
+- owner: email-agent (Slice 2)
 - domain: email
 - depends-on: [T-150, T-121]
 - handoff-to: unassigned
 - acceptance: `emails/` has a lead result email (score + breakdown + matched CTA) and an internal Hot-lead alert (email, business, industry, score, answers summary). Previewable.
 - notes: PRD §8.
+- handoff-note: emails/result-email.tsx (ResultEmail component, band-matched CTA/copy) and emails/hot-lead-alert.tsx (HotLeadAlert, urgency footer). Both use @react-email/components inline styles, previewable.
 
 ### Frontend
 
 ## T-130 — Brand/visual system (Tailwind tokens + primitives)
-- status: pending
-- owner: unassigned
+- status: done
+- owner: frontend-agent (Slice 2)
 - domain: frontend
 - depends-on: [T-100]
 - handoff-to: unassigned
 - acceptance: Tailwind theme has the PRD §9.3 tokens (base/surface/text/muted/accent), typography (Inter-like), rounded surfaces, restrained motion. Shared button/card/section primitives. Hand-built, no shadcn.
 - notes: PRD §9.3.
+- handoff-note: globals.css replaces Geist/dark-mode with @theme inline PRD §9.3 tokens; layout.tsx uses Inter (--font-inter); button/card/section primitives in components/ui/. hero.tsx/splite.tsx untouched.
 
 ## T-131 — Page 1 Landing (`/`)
 - status: pending
