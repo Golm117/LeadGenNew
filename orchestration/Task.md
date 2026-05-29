@@ -57,13 +57,14 @@ all deps `done` is pullable in parallel by a matching-domain agent. All start `p
 ### Setup & foundation
 
 ## T-100 — Scaffold Next.js 16 + Tailwind + repo
-- status: pending
-- owner: unassigned
+- status: done
+- owner: infra-agent
 - domain: infra
 - depends-on: []
 - handoff-to: unassigned
 - acceptance: `npm run dev` serves an App Router app; Tailwind compiles; lucide-react installed; npm lockfile committed. File tree matches PRD §9.2.
 - notes: PRD §11.1, §9.1. TypeScript, no component library.
+- handoff-note: Next.js 16.2.6 scaffolded at repo root with TypeScript, Tailwind v4, lucide-react v1.17.0, npm lockfile. All PRD §9.2 stubs created: `app/page.tsx`, `app/assessment/page.tsx`, `app/results/[token]/page.tsx`, `app/actions/submit-assessment.ts`, `lib/quiz-config.ts`, `lib/scoring.ts`, `lib/supabase-server.ts`, `lib/resend.ts`, `emails/.gitkeep`. `npm run build` passes (5 static/dynamic routes generated). T-101, T-110, T-120, T-130, T-150 are now unblocked.
 
 ## T-101 — Environment contract (.env.example) + DEPLOY runbook
 - status: pending
