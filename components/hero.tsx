@@ -2,7 +2,9 @@
 
 import { useRef, useState, useCallback } from 'react'
 import { motion, useSpring, useTransform } from 'framer-motion'
+import { GetStartedButton } from '@/components/ui/get-started-button'
 import { SplineScene } from '@/components/ui/splite'
+import { Typewriter } from '@/components/ui/typewriter'
 import { cn } from '@/lib/utils'
 
 // Placeholder Spline scene (D-013): swap for a branded indigo .splinecode before launch.
@@ -13,19 +15,19 @@ const SCENE = 'https://prod.spline.design/LgR4arZTQ3QN1vTR/scene.splinecode'
 const VARIANT_COPY = {
   A: {
     headlineStart: 'Software built for how your business ',
-    accentTail: 'actually works.',
+    accentPhrases: ['actually works.', 'really runs.', 'operates day to day.'],
     subhead:
       "Stop forcing your operations into tools made for someone else. In two minutes, see whether custom software is worth it for you — and where you're losing time today.",
   },
   B: {
     headlineStart: 'The wrong software is quietly costing you ',
-    accentTail: 'hours, money, and growth.',
+    accentPhrases: ['hours, money, and growth.', 'hours every single week.', 'more than you think.'],
     subhead:
       'Manual entry, constant workarounds, systems that break as you scale. See exactly where your operation is leaking time — in two minutes.',
   },
   C: {
     headlineStart: "You're forcing your business into software it was ",
-    accentTail: 'never built for.',
+    accentPhrases: ['never built for.', 'never designed to run.', 'never meant to handle.'],
     subhead:
       "Spreadsheets and five disconnected tools, duct-taped into something that almost works. Find out what that's really costing you.",
   },
@@ -119,24 +121,45 @@ export function Hero({ variant = 'A', assessmentHref = '/assessment' }: HeroProp
           <span className="mb-4 inline-flex w-fit items-center rounded-full border border-indigo-200 bg-white/70 px-3 py-1 text-xs font-medium text-indigo-700">
             Custom Software Readiness
           </span>
-          <h1 className="text-4xl font-bold leading-[1.1] tracking-tight text-slate-900 md:text-5xl">
-            {copy.headlineStart}
-            <span className="text-indigo-600">{copy.accentTail}</span>
+          <h1 className="grid grid-cols-1 text-4xl font-bold leading-[1.1] tracking-tight text-slate-900 md:text-5xl">
+            {/* Reserve height for the tallest phrase: every phrase is rendered
+                invisibly in the same grid cell, so the H1 never changes height as
+                the tail cycles — the subhead, CTA and floating chips stay put. */}
+            {copy.accentPhrases.map((phrase, i) => (
+              <span key={i} aria-hidden className="invisible col-start-1 row-start-1">
+                {copy.headlineStart}
+                {phrase}
+              </span>
+            ))}
+            <span className="col-start-1 row-start-1">
+              {copy.headlineStart}
+              {/* sr-only full first phrase keeps the H1 crawlable/accessible; the
+                  animated tail is hidden from assistive tech to avoid double-reads */}
+              <span className="sr-only">{copy.accentPhrases[0]}</span>
+              <span aria-hidden="true">
+                <Typewriter
+                  text={copy.accentPhrases}
+                  className="text-indigo-600"
+                  speed={55}
+                  deleteSpeed={32}
+                  waitTime={1900}
+                  initialDelay={350}
+                />
+              </span>
+            </span>
           </h1>
           <p className="mt-5 max-w-lg text-lg leading-relaxed text-slate-600">
             {copy.subhead}
           </p>
           <div className="mt-8 flex flex-col items-start gap-3">
-            <a
+            <GetStartedButton
               href={assessmentHref}
+              label="Get Started"
               onClick={() => {
                 window.gtag?.('event', 'quiz_start', { variant })
                 window.clarity?.('event', 'quiz_start')
               }}
-              className="group inline-flex items-center rounded-xl bg-indigo-600 px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-indigo-600/20 transition-all hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-600/30"
-            >
-              Get your Custom Software Readiness Score — 2 min
-            </a>
+            />
             <p className="text-sm text-slate-500">Free · 2 minutes · Results instantly</p>
           </div>
         </div>
