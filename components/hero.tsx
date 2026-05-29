@@ -1,17 +1,17 @@
 'use client'
 
 import { useRef, useState, useCallback } from 'react'
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import { motion, useSpring, useTransform } from 'framer-motion'
 import { SplineScene } from '@/components/ui/splite'
 import { cn } from '@/lib/utils'
 
 // Placeholder Spline scene (D-013): swap for a branded indigo .splinecode before launch.
 const SCENE = 'https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode'
 
-function IndigoGlow() {
-  const ref = useRef<HTMLDivElement>(null)
+export function Hero() {
+  const sectionRef = useRef<HTMLElement>(null)
   const [hovered, setHovered] = useState(false)
-  const size = 320
+  const size = 520
   const mouseX = useSpring(0, { bounce: 0 })
   const mouseY = useSpring(0, { bounce: 0 })
   const left = useTransform(mouseX, (x) => `${x - size / 2}px`)
@@ -19,9 +19,9 @@ function IndigoGlow() {
 
   const onMove = useCallback(
     (e: React.MouseEvent) => {
-      const parent = ref.current?.parentElement
-      if (!parent) return
-      const { left: l, top: t } = parent.getBoundingClientRect()
+      const el = sectionRef.current
+      if (!el) return
+      const { left: l, top: t } = el.getBoundingClientRect()
       mouseX.set(e.clientX - l)
       mouseY.set(e.clientY - t)
     },
@@ -29,32 +29,26 @@ function IndigoGlow() {
   )
 
   return (
-    <div
-      ref={ref}
-      className="absolute inset-0"
+    <section
+      ref={sectionRef}
       onMouseMove={onMove}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      className="relative overflow-hidden bg-gradient-to-b from-indigo-50/60 to-white"
     >
+      {/* cursor-follow glow — tracks across the whole hero */}
       <motion.div
         className={cn(
-          'pointer-events-none absolute rounded-full blur-3xl transition-opacity duration-300',
-          'bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.55),transparent_70%)]',
+          'pointer-events-none absolute z-0 rounded-full blur-3xl transition-opacity duration-300',
+          'bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.35),transparent_70%)]',
           hovered ? 'opacity-100' : 'opacity-0'
         )}
         style={{ width: size, height: size, left, top }}
       />
-    </div>
-  )
-}
-
-export function Hero() {
-  return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-indigo-50/60 to-white">
       {/* soft brand splash */}
-      <div className="pointer-events-none absolute -top-24 left-1/2 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-indigo-200/40 blur-3xl" />
+      <div className="pointer-events-none absolute -top-24 left-1/2 z-0 h-[420px] w-[820px] -translate-x-1/2 rounded-full bg-indigo-200/40 blur-3xl" />
 
-      <div className="mx-auto grid max-w-6xl grid-cols-1 items-stretch gap-8 px-6 py-16 md:grid-cols-2 md:py-24">
+      <div className="relative z-10 mx-auto grid max-w-6xl grid-cols-1 items-stretch gap-8 px-6 py-16 md:grid-cols-2 md:py-24">
         {/* Left — copy (Variant A / control) */}
         <div className="flex flex-col justify-center">
           <span className="mb-4 inline-flex w-fit items-center rounded-full border border-indigo-200 bg-white/70 px-3 py-1 text-xs font-medium text-indigo-700">
@@ -82,8 +76,13 @@ export function Hero() {
 
         {/* Right — interactive 3D (re-skinned indigo panel, not black) */}
         <div className="relative h-[360px] overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-700 via-indigo-800 to-slate-900 shadow-2xl shadow-indigo-900/30 md:h-[480px]">
-          <IndigoGlow />
-          <SplineScene scene={SCENE} className="relative z-10 h-full w-full" />
+          {/* Robot recolor (D-013 interim): CSS hue shift toward cyan/teal until the branded .splinecode lands */}
+          <SplineScene
+            scene={SCENE}
+            className="relative z-10 h-full w-full [filter:hue-rotate(150deg)_saturate(1.6)]"
+          />
+          {/* cyan/teal tint — screen-blend over the dark robot; centered so the panel corners stay indigo */}
+          <div className="pointer-events-none absolute inset-0 z-[15] mix-blend-screen bg-[radial-gradient(circle_at_50%_42%,rgba(34,211,238,0.6),rgba(20,184,166,0.25)_45%,transparent_68%)]" />
           {/* sample score chip — gauge motif retained as secondary element */}
           <div className="absolute bottom-5 left-5 z-20 rounded-2xl bg-white/95 px-4 py-3 shadow-lg backdrop-blur">
             <div className="text-2xl font-bold text-indigo-600">78 / 100</div>
