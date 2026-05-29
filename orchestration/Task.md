@@ -158,8 +158,8 @@ all deps `done` is pullable in parallel by a matching-domain agent. All start `p
 - domain: frontend
 - depends-on: [T-130]
 - handoff-to: unassigned
-- acceptance: RSC landing with all PRD §5 sections + dual CTA → `/assessment`, UTM passthrough on the link. `landing_view`/`quiz_start` event hooks present.
-- notes: PRD §5 page 1, §9.3.
+- acceptance: Landing built from `orchestration/content/landing.md` (approved copy): all sections + dual CTA → `/assessment`, UTM passthrough. **Hero A/B/C (D-011):** render one of 3 hero blocks (A/B/C) by an assigned `variant`; assign randomly on first visit, persist in a cookie, and append `variant` to the `/assessment` link. Rest of page identical across variants. Score-gauge hero visual. `landing_view`/`quiz_start` hooks carry `variant`.
+- notes: PRD §5 page 1, §9.3. Copy + design in content/landing.md. Mock proof numbers (D-012).
 
 ## T-132 — Page 2 Assessment (`/assessment`)
 - status: pending
@@ -207,8 +207,8 @@ all deps `done` is pullable in parallel by a matching-domain agent. All start `p
 - domain: analytics
 - depends-on: [T-131, T-122, T-140]
 - handoff-to: unassigned
-- acceptance: UTM params captured on landing, carried through the quiz link, included in the submission payload, and persisted to `leads` (utm_source/medium/campaign, referrer).
-- notes: PRD §10.
+- acceptance: UTM params captured on landing, carried through the quiz link, included in the submission payload, and persisted to `leads` (utm_source/medium/campaign, referrer). **Also capture the hero `variant` (D-011)** through the same path and store it on the lead row in `answers` JSONB (zero migration) for Hot-lead-yield-per-variant analysis.
+- notes: PRD §10. Variant tracking per D-011.
 
 ## T-161 — Analytics events (GA4 + Clarity)
 - status: pending
@@ -216,8 +216,8 @@ all deps `done` is pullable in parallel by a matching-domain agent. All start `p
 - domain: analytics
 - depends-on: [T-131, T-132, T-133]
 - handoff-to: unassigned
-- acceptance: Full event funnel fires: landing_view → quiz_start → quiz_question_answered → quiz_email_submitted → quiz_completed → result_view → cta_*_click. GA4 + Clarity installed.
-- notes: PRD §10.
+- acceptance: Full event funnel fires: landing_view → quiz_start → quiz_question_answered → quiz_email_submitted → quiz_completed → result_view → cta_*_click. GA4 + Clarity installed. **`landing_view` and `quiz_start` carry a `variant` (A/B/C) dimension (D-011)** so start-rate per variant is measurable in GA4.
+- notes: PRD §10. Variant dimension per D-011.
 
 ### Hardening & ship
 
