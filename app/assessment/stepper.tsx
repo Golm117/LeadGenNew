@@ -1,7 +1,7 @@
 'use client'
 
 import { useReducer, useCallback, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { QuizProgressNav } from '@/components/ui/progress-indicator'
@@ -260,14 +260,15 @@ export function AssessmentStepper() {
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-indigo-50/60 to-white px-6 py-16">
       <div className="w-full max-w-xl">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-xl shadow-indigo-900/5 md:p-10">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={String(state.step)}
-              initial={reduce ? false : { opacity: 0, y: 8 }}
-              animate={reduce ? undefined : { opacity: 1, y: 0 }}
-              exit={reduce ? undefined : { opacity: 0, y: -8 }}
-              transition={{ duration: 0.15, ease: 'easeOut' }}
-            >
+          {/* Keyed motion.div re-mounts on each step change for a ~150ms enter
+              transition. No AnimatePresence/exit — mode="wait" can hang on its
+              exit-complete callback (React 19 + framer-motion), freezing the step. */}
+          <motion.div
+            key={String(state.step)}
+            initial={reduce ? false : { opacity: 0, y: 8 }}
+            animate={reduce ? undefined : { opacity: 1, y: 0 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+          >
               {/* ── Intro step ──────────────────────────────────────────── */}
               {state.step === 'intro' && <IntroStep onStart={handleStart} />}
 
@@ -306,8 +307,7 @@ export function AssessmentStepper() {
                   onTurnstileSuccess={(token) => dispatch({ type: 'SET_TURNSTILE', token })}
                 />
               )}
-            </motion.div>
-          </AnimatePresence>
+          </motion.div>
         </div>
       </div>
     </main>
@@ -365,16 +365,16 @@ interface QuestionStepProps {
 
 // Helper text per question (from assessment.md)
 const HELPER_TEXT: Record<string, string> = {
-  q1: 'Think about quotes, job tracking, scheduling, invoicing, reporting — any step where someone updates a spreadsheet or writes something down rather than a system handling it.',
-  q2: "Consider whether your tools were built for your type of work, or whether your team adapted their process to work around the tool's limitations.",
-  q3: 'Include time spent fixing mistakes, re-entering data, chasing down discrepancies, and re-doing work that a well-wired system would have caught the first time.',
-  q4: 'If adding a new client, a new service line, or doubling volume would require hiring extra admin before it would require anything else — that\'s a process constraint.',
-  q5: "Count the people whose day-to-day work touches the operations or workflows you're thinking about — not just total headcount.",
-  q6: "Enter whatever describes your business best. There's no wrong answer — this helps us tailor the breakdown you'll see on your results page.",
-  q7: 'Be honest here — the result is more useful if it matches where you actually are, not where you wish you were. "Just exploring" is a completely valid answer.',
-  q8: "Custom software projects vary widely in scope and cost. This question isn't a commitment — it helps us give you a result that's actually relevant to your situation.",
-  q9: "No wrong answer. If you're doing research for a partner, owner, or board, we can still give you something useful to bring back.",
-  q10: 'This helps us point you to the most relevant next step after your score — whether that\'s a conversation, a guide, or just your results to keep on file.',
+  q1: 'Think quotes, scheduling, job and order tracking, invoicing, reporting — wherever the live, trustworthy detail actually sits day to day.',
+  q2: 'Did your tools fit your work from the start, or did your team bend its process — and build workarounds — to fit the tools?',
+  q3: 'Count each separate place the same details get typed or copied again — quote to job to schedule to invoice to report.',
+  q4: 'Include fixing mistakes, re-entering data, chasing down discrepancies, and re-doing work a well-wired system would have caught the first time.',
+  q5: 'A rough estimate is fine. Add up data entry, chasing updates, and hand-building reports across your team in a typical week.',
+  q6: "Whatever describes your business best — there's no wrong answer. This helps us tailor the breakdown you'll see on your results page.",
+  q7: 'Be honest — the result is more useful if it matches where you actually are. "Just exploring" is a completely valid answer.',
+  q8: "This isn't a commitment — it just helps us give you a result that's actually relevant to your situation.",
+  q9: "No wrong answer. If you're researching for a partner, owner, or board, we can still give you something useful to bring back.",
+  q10: 'This helps us point you to the most relevant next step after your score — a conversation, a guide, or just your results to keep on file.',
 }
 
 function QuestionStep({

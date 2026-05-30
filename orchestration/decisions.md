@@ -150,6 +150,18 @@ Entry format:
 - Date: 2026-05-29
 - Supersedes: the failed Slice-5 RemoteTrigger run (zero output).
 
+### D-019 — Assessment question redesign (spec-driven)
+- Question: Should the quiz keep the PRD Appendix A questions, or be redesigned now that we have question-design research?
+- Answer: **Redesigned** against `assessment-question-design-spec.md` (research basis `scored-self-assessment-quiz-design.md`). Supersedes Appendix A / D-006 "ship verbatim."
+  - **Readiness (Q1–Q5):** single-select MC, **behaviorally anchored** (each option = a real state), authored so the high-scoring answer isn't inferable (anti-gaming). Replaced the points-for-company-size item and the standalone "holding back growth" item; **added** data-fragmentation (re-entry count, Q3) and **admin-hours** (Q5 — also powers a quantified "you're losing ~X hrs/week" result insight).
+  - **Q6** stays the unscored free-text industry capture (kept at id `q6` — `submitAssessment` reads `answers.q6`).
+  - **Intent (Q7–Q10):** kept the four qualifiers (timeline/budget/authority/active-search), reworded; transparency is acceptable here since they route rather than drive the public score.
+  - **Unchanged:** dual-output model, `scoring.ts` (computes maxes dynamically), bands hot≥65/warm/cold, `schema.ts`. `READINESS_MAX` is now 110; `INTENT_MAX` stays 100.
+  - **Results page:** added a scope disclaimer; `insights.ts` rewritten to be answer-specific and Barnum-safe (every bullet tied to a given answer, honest gaps for warm/cold).
+- Decided by: Dave (approved the proposed set at 96% confidence)
+- Date: 2026-05-29
+- Supersedes: D-006 (Appendix A verbatim).
+
 ---
 
 ## Open / awaiting human
