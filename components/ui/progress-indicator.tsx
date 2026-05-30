@@ -1,10 +1,12 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import { CircleCheck } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-const SPRING = { type: 'spring' as const, stiffness: 300, damping: 24, mass: 0.8 }
+// Dot geometry (px) — used to size the growing progress pill across N dots.
+const DOT = 10 // h-2.5 / w-2.5
+const GAP = 12 // gap-3
+const PAD = 4 // pill overhang past the dot edges
 
 interface QuizProgressNavProps {
   /** 1-based current step */
@@ -40,28 +42,35 @@ export function QuizProgressNav({
 }: QuizProgressNavProps) {
   const isLast = isLastProp ?? step >= total
 
+  // Pill spans from before dot 1 to the right edge of the current dot. Width is
+  // set DECLARATIVELY (style) so it is always correct for the current step; the
+  // CSS transition just smooths the change — no rAF/JS animation that could
+  // freeze the pill at a stale width if the tab is throttled.
+  const pillStep = Math.min(Math.max(step, 1), total)
+  const pillWidth = (pillStep - 1) * (DOT + GAP) + DOT + PAD * 2
+
   return (
     <div className={cn('flex w-full flex-col items-center gap-6', className)}>
-      {/* Progress dots — scale to any step count */}
-      <div className="w-full max-w-sm">
-        <div className="mb-3 flex items-center justify-center text-xs font-medium text-slate-500">
-          <span>{label ?? `Question ${Math.min(step, total)} of ${total}`}</span>
+      {/* Progress: "Question N of M" + dots with a growing indigo pill */}
+      <div className="flex w-full max-w-sm flex-col items-center">
+        <div className="mb-4 text-xs font-medium text-slate-500">
+          {label ?? `Question ${Math.min(step, total)} of ${total}`}
         </div>
-        <div className="flex items-center justify-center gap-2.5">
+        <div className="relative flex items-center gap-3">
+          <div
+            aria-hidden
+            className="absolute top-1/2 h-3.5 -translate-y-1/2 rounded-full bg-indigo-600 transition-[width] duration-300 ease-out motion-reduce:transition-none"
+            style={{ left: -PAD, width: pillWidth }}
+          />
           {Array.from({ length: total }).map((_, i) => {
             const idx = i + 1
-            const filled = idx <= step
-            const current = idx === step
+            const covered = idx <= step
             return (
-              <motion.span
+              <span
                 key={idx}
-                initial={false}
-                animate={{ scale: current ? 1.3 : 1 }}
-                transition={SPRING}
                 className={cn(
-                  'h-2.5 w-2.5 rounded-full transition-colors duration-300',
-                  filled ? 'bg-indigo-600' : 'bg-slate-200',
-                  current && 'ring-2 ring-indigo-600/30 ring-offset-2 ring-offset-white'
+                  'relative z-10 h-2.5 w-2.5 rounded-full transition-colors duration-300',
+                  covered ? 'bg-white' : 'bg-slate-300'
                 )}
               />
             )
@@ -69,22 +78,18 @@ export function QuizProgressNav({
         </div>
       </div>
 
-      {/* Buttons — Back fades/expands in from step 2+; Continue collapses to make room */}
+      {/* Buttons — always-on Back (D-018); Continue fills the remaining width */}
       <div className="w-full max-w-sm">
-        <motion.div className="flex items-center gap-2" layout>
-          <motion.button
+        <div className="flex items-center gap-2">
+          <button
             type="button"
-            initial={{ opacity: 0, width: 0, scale: 0.8 }}
-            animate={{ opacity: 1, width: 'auto', scale: 1 }}
-            transition={{ ...SPRING, opacity: { duration: 0.2 } }}
             onClick={onBack}
             className="flex items-center justify-center rounded-full bg-slate-100 px-5 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-200"
           >
             {backLabel}
-          </motion.button>
-          <motion.button
+          </button>
+          <button
             type="button"
-            layout
             onClick={onContinue}
             disabled={!canContinue}
             className={cn(
@@ -92,18 +97,10 @@ export function QuizProgressNav({
               canContinue ? 'hover:-translate-y-0.5 hover:bg-indigo-700' : 'cursor-not-allowed opacity-50'
             )}
           >
-            {isLast && (
-              <motion.span
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 15, mass: 0.5 }}
-              >
-                <CircleCheck size={16} />
-              </motion.span>
-            )}
+            {isLast && <CircleCheck size={16} />}
             {isLast ? finishLabel : continueLabel}
-          </motion.button>
-        </motion.div>
+          </button>
+        </div>
       </div>
     </div>
   )

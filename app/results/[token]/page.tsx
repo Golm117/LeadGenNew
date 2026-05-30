@@ -196,6 +196,10 @@ function ResultPageContent({ lead, insights, firstName, band }: ResultPageConten
             </span>
           </div>
           <p className="mt-1 text-sm text-slate-400">Custom Software Readiness Score</p>
+          <p className="mt-2 text-xs leading-relaxed text-slate-400">
+            A quick, directional read based on your answers — not a full audit. It points
+            to where the opportunity is; a real conversation is how you size it.
+          </p>
         </section>
 
         {/* ── Band headline + framing ────────────────────────────────────── */}

@@ -24,11 +24,11 @@ import { resolve } from 'path'
 // Test payloads — one per band
 //
 // Answers are chosen so that:
-//   - HOT:  readiness=96, intent=100, band=hot
+//   - HOT:  readiness=69, intent=100, band=hot
 //           3 conditional insight bullets fire → always-shown is 4th (within slice)
-//   - WARM: readiness=36, intent=49, band=warm
+//   - WARM: readiness=35, intent=49, band=warm
 //           3 conditional insight bullets fire → always-shown is 4th (within slice)
-//   - COLD: readiness=4, intent=12, band=cold
+//   - COLD: readiness=0, intent=12, band=cold
 //           3 conditional insight bullets fire → always-shown is 4th (within slice)
 //
 // In each band the always-shown bullet falls within .slice(0,4) so insight
@@ -37,15 +37,15 @@ import { resolve } from 'path'
 // ---------------------------------------------------------------------------
 
 const HOT_ANSWERS = {
-  // Readiness: q1_d(24) + q2_d(20) + q3_d(22) + q4_a(0) + q5_c(12) = 78 raw → 78/100
+  // Readiness: q1_d(24) + q2_d(22) + q3_d(22) + q4_a(0) + q5_b(8) = 76 raw → 76/110 → 69
   // Intent:    q7_a(30) + q8_a(25) + q9_a(25) + q10_a(20) = 100 → 100/100
   // Band: hot (>=65)
-  // Insight conditionals: q1_d ✓, q2_d ✓, q3_d ✓, q4_a ✗ → 3 bullets + always-shown
-  q1: 'q1_d',  // Almost everything (24 pts readiness)
-  q2: 'q2_d',  // We force it (20 pts readiness)
-  q3: 'q3_d',  // Constant (22 pts readiness)
-  q4: 'q4_a',  // No (0 pts readiness — keeps conditional count at 3)
-  q5: 'q5_c',  // 11-50 (12 pts readiness)
+  // Insight conditionals: q1_d ✓, q2_d ✓, q3_d ✓, hours/q4 ✗ → 3 bullets + always-shown
+  q1: 'q1_d',  // status lives in people's heads (24 pts)
+  q2: 'q2_d',  // work happens outside the tools (22 pts)
+  q3: 'q3_d',  // lost count of re-entry (22 pts)
+  q4: 'q4_a',  // rework rarely (0 pts — keeps conditional count at 3)
+  q5: 'q5_b',  // 2–5 hrs/wk admin (8 pts — avoids the hours bullet)
   q6: 'Metal fabrication',
   q7: 'q7_a',  // Now / this quarter (30 pts intent)
   q8: 'q8_a',  // Allocated / ready (25 pts intent)
@@ -54,15 +54,15 @@ const HOT_ANSWERS = {
 }
 
 const WARM_ANSWERS = {
-  // Readiness: q1_a(0) + q2_c(14) + q3_b(8) + q4_b(6) + q5_b(8) = 36 raw → 36/100
+  // Readiness: q1_a(0) + q2_c(16) + q3_b(8) + q4_b(7) + q5_b(8) = 39 raw → 39/110 → 35
   // Intent:    q7_b(15) + q8_b(12) + q9_b(12) + q10_b(10) = 49 → 49/100
   // Band: warm (35–64)
   // Insight conditionals: q1_a ✗, q2_c ✓, q3_b ✓, q4_b ✓ → 3 bullets + always-shown
-  q1: 'q1_a',  // None (0 pts readiness — keeps conditional count at 3)
-  q2: 'q2_c',  // Poorly (14 pts readiness)
-  q3: 'q3_b',  // Noticeable (8 pts readiness)
-  q4: 'q4_b',  // Somewhat (6 pts readiness)
-  q5: 'q5_b',  // 2-10 (8 pts readiness)
+  q1: 'q1_a',  // trusted single system (0 pts — keeps q1 conditional off)
+  q2: 'q2_c',  // constant workarounds (16 pts)
+  q3: 'q3_b',  // two or three re-entry spots (8 pts)
+  q4: 'q4_b',  // rework a few times a month (7 pts)
+  q5: 'q5_b',  // 2–5 hrs/wk admin (8 pts)
   q6: 'Environmental services',
   q7: 'q7_b',  // This year (15 pts intent)
   q8: 'q8_b',  // Exploring budget (12 pts intent)
@@ -71,15 +71,15 @@ const WARM_ANSWERS = {
 }
 
 const COLD_ANSWERS = {
-  // Readiness: q1_a(0) + q2_a(0) + q3_a(0) + q4_a(0) + q5_a(4) = 4 raw → 4/100
+  // Readiness: q1_a(0) + q2_a(0) + q3_a(0) + q4_a(0) + q5_a(0) = 0 raw → 0/110 → 0
   // Intent:    q7_c(0) + q8_c(0) + q9_b(12) + q10_c(0) = 12 → 12/100
   // Band: cold (<35)
   // Insight conditionals: (q1_a&&q4_a) ✓, q7_c ✓, q8_c ✓, q9_b ✗ → 3 bullets + always-shown
-  q1: 'q1_a',  // None (0 pts readiness)
-  q2: 'q2_a',  // Perfectly (0 pts readiness)
-  q3: 'q3_a',  // Negligible (0 pts readiness)
-  q4: 'q4_a',  // No (0 pts readiness)
-  q5: 'q5_a',  // Solo (4 pts readiness)
+  q1: 'q1_a',  // trusted single system (0 pts)
+  q2: 'q2_a',  // tools built around the work (0 pts)
+  q3: 'q3_a',  // info flows through (0 pts)
+  q4: 'q4_a',  // rework rarely (0 pts)
+  q5: 'q5_a',  // under 2 hrs/wk admin (0 pts)
   q6: 'Retail',
   q7: 'q7_c',  // Just exploring (0 pts intent)
   q8: 'q8_c',  // No budget yet (0 pts intent)
@@ -131,8 +131,8 @@ try {
   const r = computeReadiness(HOT_ANSWERS)
   const i = computeIntent(HOT_ANSWERS)
   const b = bandFor(i)
-  // HOT: readiness = round(78/100*100) = 78, intent = round(100/100*100) = 100
-  assert.strictEqual(r, 78, `Readiness should be 78, got ${r}`)
+  // HOT: readiness = round(76/110*100) = 69, intent = round(100/100*100) = 100
+  assert.strictEqual(r, 69, `Readiness should be 69, got ${r}`)
   assert.strictEqual(i, 100, `Intent should be 100, got ${i}`)
   assert.strictEqual(b, 'hot', `Band should be hot, got ${b}`)
   pass(`Readiness=${r}/100, Intent=${i}/100, Band=${b}`)
@@ -143,8 +143,8 @@ try {
   const r = computeReadiness(WARM_ANSWERS)
   const i = computeIntent(WARM_ANSWERS)
   const b = bandFor(i)
-  // WARM: readiness = round(36/100*100) = 36, intent = round(49/100*100) = 49
-  assert.strictEqual(r, 36, `Readiness should be 36, got ${r}`)
+  // WARM: readiness = round(39/110*100) = 35, intent = round(49/100*100) = 49
+  assert.strictEqual(r, 35, `Readiness should be 35, got ${r}`)
   assert.ok(i >= 35 && i < 65, `Intent should be 35–64 for warm, got ${i}`)
   assert.strictEqual(b, 'warm', `Band should be warm, got ${b}`)
   pass(`Readiness=${r}/100, Intent=${i}/100, Band=${b}`)
@@ -165,8 +165,8 @@ section('Insight selection')
 try {
   const hotInsights = selectInsights(HOT_ANSWERS, 'hot')
   assert.ok(hotInsights.length >= 2 && hotInsights.length <= 4, `Hot: 2–4 bullets, got ${hotInsights.length}`)
-  // HOT always-shown bullet (4th, within slice): "...now — not later."
-  assert.ok(hotInsights.some(b => b.includes('now — not later')), 'Hot: always-shown bullet present')
+  // HOT always-shown bullet (4th, within slice): "...now, not later."
+  assert.ok(hotInsights.some(b => b.includes('now, not later')), 'Hot: always-shown bullet present')
   pass(`Hot: ${hotInsights.length} bullets, always-shown present`)
 
   const warmInsights = selectInsights(WARM_ANSWERS, 'warm')
