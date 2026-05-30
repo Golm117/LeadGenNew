@@ -1,7 +1,6 @@
 'use client'
 
 import { useReducer, useCallback, useState } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { QuizProgressNav } from '@/components/ui/progress-indicator'
@@ -121,7 +120,6 @@ export function AssessmentStepper() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
-  const reduce = useReducedMotion()
 
   // ── Derived values ─────────────────────────────────────────────────────────
 
@@ -260,54 +258,54 @@ export function AssessmentStepper() {
     <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-indigo-50/60 to-white px-6 py-16">
       <div className="w-full max-w-xl">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-xl shadow-indigo-900/5 md:p-10">
-          {/* Keyed motion.div re-mounts on each step change for a ~150ms enter
-              transition. No AnimatePresence/exit — mode="wait" can hang on its
-              exit-complete callback (React 19 + framer-motion), freezing the step. */}
-          <motion.div
-            key={String(state.step)}
-            initial={reduce ? false : { opacity: 0, y: 8 }}
-            animate={reduce ? undefined : { opacity: 1, y: 0 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
-          >
-              {/* ── Intro step ──────────────────────────────────────────── */}
-              {state.step === 'intro' && <IntroStep onStart={handleStart} />}
+          {/* Keyed div re-mounts per step. No enter animation: a fade that gates
+              content on opacity 0→1 can leave the step invisible if the animation
+              is paused (e.g. a backgrounded tab throttles rAF/CSS animations).
+              The animated progress pill below carries the motion instead. */}
+          <div key={String(state.step)}>
+            {/* ── Intro step ────────────────────────────────────────────── */}
+            {state.step === 'intro' && <IntroStep onStart={handleStart} />}
 
-              {/* ── Question steps (1–10) ───────────────────────────────── */}
-              {typeof state.step === 'number' && currentQuestion && (
-                <QuestionStep
-                  question={currentQuestion}
-                  answers={state.answers}
-                  nudge={nudge}
-                  onSelect={handleSelect}
-                  onFreeTextChange={handleFreeTextChange}
-                  navStep={navStep}
-                  navTotal={navTotal}
-                  navLabel={navLabel}
-                  canContinue={canContinue}
-                  onBack={() => dispatch({ type: 'BACK' })}
-                  onContinue={handleContinue}
-                />
-              )}
+            {/* ── Question steps (1–10) ─────────────────────────────────── */}
+            {typeof state.step === 'number' && currentQuestion && (
+              <QuestionStep
+                question={currentQuestion}
+                answers={state.answers}
+                nudge={nudge}
+                onSelect={handleSelect}
+                onFreeTextChange={handleFreeTextChange}
+              />
+            )}
 
-              {/* ── Email capture step ──────────────────────────────────── */}
-              {state.step === 'email' && (
-                <EmailStep
-                  name={state.name}
-                  email={state.email}
-                  submitting={state.submitting}
-                  error={state.error}
-                  navStep={navStep}
-                  navTotal={navTotal}
-                  navLabel={navLabel}
-                  canContinue={canContinue}
-                  onBack={() => dispatch({ type: 'BACK' })}
-                  onContinue={handleContinue}
-                  onNameChange={(v) => dispatch({ type: 'SET_NAME', value: v })}
-                  onEmailChange={(v) => dispatch({ type: 'SET_EMAIL', value: v })}
-                  onTurnstileSuccess={(token) => dispatch({ type: 'SET_TURNSTILE', token })}
-                />
-              )}
-          </motion.div>
+            {/* ── Email capture step ────────────────────────────────────── */}
+            {state.step === 'email' && (
+              <EmailStep
+                name={state.name}
+                email={state.email}
+                error={state.error}
+                onNameChange={(v) => dispatch({ type: 'SET_NAME', value: v })}
+                onEmailChange={(v) => dispatch({ type: 'SET_EMAIL', value: v })}
+                onTurnstileSuccess={(token) => dispatch({ type: 'SET_TURNSTILE', token })}
+              />
+            )}
+          </div>
+
+          {/* Progress nav — rendered ONCE outside the keyed step so it persists
+              and its progress pill animates smoothly across steps. */}
+          {state.step !== 'intro' && (
+            <div className="mt-8">
+              <QuizProgressNav
+                step={navStep}
+                total={navTotal}
+                label={navLabel}
+                isLast={state.step === 'email'}
+                canContinue={state.step === 'email' ? canContinue && !state.submitting : canContinue}
+                onBack={() => dispatch({ type: 'BACK' })}
+                onContinue={handleContinue}
+                finishLabel={state.submitting ? 'Submitting…' : 'See My Score →'}
+              />
+            </div>
+          )}
         </div>
       </div>
     </main>
@@ -355,12 +353,6 @@ interface QuestionStepProps {
   nudge: string | null
   onSelect: (questionId: string, optionId: string) => void
   onFreeTextChange: (questionId: string, value: string) => void
-  navStep: number
-  navTotal: number
-  navLabel: string
-  canContinue: boolean
-  onBack: () => void
-  onContinue: () => void
 }
 
 // Helper text per question (from assessment.md)
@@ -383,12 +375,6 @@ function QuestionStep({
   nudge,
   onSelect,
   onFreeTextChange,
-  navStep,
-  navTotal,
-  navLabel,
-  canContinue,
-  onBack,
-  onContinue,
 }: QuestionStepProps) {
   const selectedId = answers[question.id] ?? null
   const helperText = HELPER_TEXT[question.id] ?? null
@@ -443,16 +429,6 @@ function QuestionStep({
           )}
         </div>
       </fieldset>
-
-      <QuizProgressNav
-        step={navStep}
-        total={navTotal}
-        label={navLabel}
-        isLast={false}
-        canContinue={canContinue}
-        onBack={onBack}
-        onContinue={onContinue}
-      />
     </div>
   )
 }
@@ -462,14 +438,7 @@ function QuestionStep({
 interface EmailStepProps {
   name: string
   email: string
-  submitting: boolean
   error: string | null
-  navStep: number
-  navTotal: number
-  navLabel: string
-  canContinue: boolean
-  onBack: () => void
-  onContinue: () => void
   onNameChange: (v: string) => void
   onEmailChange: (v: string) => void
   onTurnstileSuccess: (token: string) => void
@@ -478,14 +447,7 @@ interface EmailStepProps {
 function EmailStep({
   name,
   email,
-  submitting,
   error,
-  navStep,
-  navTotal,
-  navLabel,
-  canContinue,
-  onBack,
-  onContinue,
   onNameChange,
   onEmailChange,
   onTurnstileSuccess,
@@ -580,16 +542,6 @@ function EmailStep({
           {error}
         </div>
       )}
-
-      <QuizProgressNav
-        step={navStep}
-        total={navTotal}
-        label={navLabel}
-        canContinue={canContinue && !submitting}
-        onBack={onBack}
-        onContinue={onContinue}
-        finishLabel={submitting ? 'Submitting…' : 'See My Score →'}
-      />
 
       <p className="text-center text-xs text-slate-400">Results load instantly after you submit.</p>
     </div>
