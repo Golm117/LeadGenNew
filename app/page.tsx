@@ -54,7 +54,7 @@ export default async function LandingPage({
       <section className="bg-surface px-6 py-20 md:py-24">
         <Reveal className="mx-auto max-w-3xl">
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
-            We build software around your operation — not the other way around.
+            We build software around your operation, not the other way around.
           </h2>
           <p className="mt-6 text-lg leading-relaxed text-slate-600">
             GOLM builds custom software for niche operations and logistics businesses: one system
@@ -94,14 +94,14 @@ export default async function LandingPage({
             In two minutes, you&apos;ll know:
           </h2>
           <ul className="mt-8 space-y-5">
-            <li className="flex items-start gap-4 border-l-2 border-indigo-300 pl-4 text-lg leading-relaxed text-slate-600">
-              Your <strong className="mx-1 font-semibold text-slate-800">Custom Software Readiness Score (0–100)</strong> — how poised your business is to benefit from custom software.
+            <li className="border-l-2 border-indigo-300 pl-4 text-lg leading-relaxed text-slate-600">
+              Your <strong className="font-semibold text-slate-800">Readiness Score</strong> (0–100), and how much your business stands to gain from custom software.
             </li>
-            <li className="flex items-start gap-4 border-l-2 border-indigo-300 pl-4 text-lg leading-relaxed text-slate-600">
-              <strong className="mr-1 font-semibold text-slate-800">Where</strong> you&apos;re losing time and money in your current setup.
+            <li className="border-l-2 border-indigo-300 pl-4 text-lg leading-relaxed text-slate-600">
+              <strong className="font-semibold text-slate-800">Where</strong>{' '}you&apos;re losing time and money right now.
             </li>
-            <li className="flex items-start gap-4 border-l-2 border-indigo-300 pl-4 text-lg leading-relaxed text-slate-600">
-              Whether a custom build is <strong className="mx-1 font-semibold text-slate-800">actually worth it for you right now</strong> — straight answer, no pitch.
+            <li className="border-l-2 border-indigo-300 pl-4 text-lg leading-relaxed text-slate-600">
+              Whether a custom build is <strong className="font-semibold text-slate-800">worth it for you yet</strong>. Straight answer, no pitch.
             </li>
           </ul>
         </Reveal>

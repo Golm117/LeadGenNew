@@ -42,7 +42,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     id: 'q1',
     category: 'readiness',
     type: 'single-choice',
-    text: 'When you need the real status of a job, order, or client — where do you look?',
+    text: 'When you need the real status of a job, order, or client, where do you look?',
     options: [
       { id: 'q1_a', label: 'One system everyone trusts and keeps updated',          points: 0  },
       { id: 'q1_b', label: 'Mostly a system, but the real detail lives in side spreadsheets', points: 8  },
@@ -72,7 +72,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     type: 'single-choice',
     text: 'From a job starting to finishing, how many separate places does someone re-enter or copy the same information?',
     options: [
-      { id: 'q3_a', label: 'One — it flows through automatically', points: 0  },
+      { id: 'q3_a', label: 'One, it flows through automatically', points: 0  },
       { id: 'q3_b', label: 'Two or three',                         points: 8  },
       { id: 'q3_c', label: 'Four or five',                         points: 16 },
       { id: 'q3_d', label: "I've lost count",                      points: 22 },
@@ -98,7 +98,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     id: 'q5',
     category: 'readiness',
     type: 'single-choice',
-    text: 'Roughly how many hours a week does your team spend on manual admin a good system could handle — data entry, chasing updates, building reports by hand?',
+    text: 'Roughly how many hours a week does your team spend on manual admin a good system could handle: data entry, chasing updates, building reports by hand?',
     options: [
       { id: 'q5_a', label: 'Under 2',          points: 0  },
       { id: 'q5_b', label: '2–5',              points: 8  },

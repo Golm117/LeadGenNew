@@ -42,7 +42,7 @@ export function ScopeRequestForm({ token }: ScopeRequestFormProps) {
     return (
       <div className="rounded-xl border border-indigo-100 bg-indigo-50 px-6 py-8 text-center">
         <p className="text-base font-semibold text-indigo-800">
-          Thanks — we&apos;ll be in touch within one business day with a rough scope.
+          Thanks. We&apos;ll be in touch within one business day with a rough scope.
         </p>
       </div>
     )
@@ -72,7 +72,7 @@ export function ScopeRequestForm({ token }: ScopeRequestFormProps) {
           rows={4}
           value={primaryPain}
           onChange={e => setPrimaryPain(e.target.value)}
-          placeholder="e.g. We track job costing in three different spreadsheets and they're always out of sync — we lose hours each week reconciling them and quotes get delayed."
+          placeholder="e.g. We track job costing in three different spreadsheets and they're always out of sync. We lose hours each week reconciling them and quotes get delayed."
           disabled={isPending}
           className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:opacity-60 resize-none"
         />
@@ -94,7 +94,7 @@ export function ScopeRequestForm({ token }: ScopeRequestFormProps) {
 
       <div>
         <label className="mb-1.5 block text-sm font-medium text-slate-700">
-          Timeline — when are you hoping to have something in place?
+          Timeline: when are you hoping to have something in place?
         </label>
         <input
           type="text"

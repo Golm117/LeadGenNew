@@ -59,7 +59,7 @@ export default function ResultEmail({ name, readinessScore, intentBand, insights
             {/* CTA */}
             <Section style={{ textAlign: 'center' }}>
               <Text style={{ color: '#0F172A', fontSize: 16, fontWeight: 600, margin: '0 0 16px' }}>
-                {intentBand === 'hot' ? 'You\'re a strong candidate for custom software — let\'s talk.' : intentBand === 'warm' ? 'Custom software could unlock real gains for your business.' : 'You\'re building the right foundation — we\'ll be here when you\'re ready.'}
+                {intentBand === 'hot' ? 'You\'re a strong candidate for custom software. Let\'s talk.' : intentBand === 'warm' ? 'Custom software could unlock real gains for your business.' : 'You\'re building the right foundation, and we\'ll be here when you\'re ready.'}
               </Text>
               <Button
                 href={ctaUrl}
@@ -71,7 +71,7 @@ export default function ResultEmail({ name, readinessScore, intentBand, insights
 
             <Hr style={{ borderColor: '#E2E8F0', margin: '24px 0' }} />
             <Text style={{ color: '#94A3B8', fontSize: 12, textAlign: 'center', margin: 0 }}>
-              GOLM — General Operations and Logistics Management Inc.
+              GOLM · General Operations and Logistics Management Inc.
             </Text>
           </Section>
         </Container>

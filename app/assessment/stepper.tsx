@@ -109,7 +109,7 @@ function isValidEmail(email: string): boolean {
 // Milestone nudges shown after completing certain questions (assessment.md)
 function getMilestoneNudge(stepJustCompleted: number): string | null {
   if (stepJustCompleted === 4) return 'Halfway there.'
-  if (stepJustCompleted === 7) return 'Almost done — three more.'
+  if (stepJustCompleted === 7) return 'Almost done. Three more.'
   if (stepJustCompleted === 9) return 'Last question.'
   return null
 }
@@ -226,7 +226,7 @@ export function AssessmentStepper() {
     } catch {
       dispatch({
         type: 'SET_ERROR',
-        error: "Something went wrong on our end. Your answers are still here — try submitting again in a moment.",
+        error: "Something went wrong on our end. Your answers are still here. Try submitting again in a moment.",
       })
       dispatch({ type: 'SET_SUBMITTING', value: false })
       return
@@ -322,7 +322,7 @@ function IntroStep({ onStart }: { onStart: () => void }) {
           Let&apos;s see where you actually stand.
         </h1>
         <p className="mt-4 text-base leading-relaxed text-slate-600">
-          Ten short questions about how your business runs today. Answer honestly — the score is
+          Ten short questions about how your business runs today. Answer honestly. The score is
           only useful if it reflects reality.
         </p>
         <p className="mt-3 text-base leading-relaxed text-slate-600">
@@ -357,16 +357,16 @@ interface QuestionStepProps {
 
 // Helper text per question (from assessment.md)
 const HELPER_TEXT: Record<string, string> = {
-  q1: 'Think quotes, scheduling, job and order tracking, invoicing, reporting — wherever the live, trustworthy detail actually sits day to day.',
-  q2: 'Did your tools fit your work from the start, or did your team bend its process — and build workarounds — to fit the tools?',
-  q3: 'Count each separate place the same details get typed or copied again — quote to job to schedule to invoice to report.',
-  q4: 'Include fixing mistakes, re-entering data, chasing down discrepancies, and re-doing work a well-wired system would have caught the first time.',
+  q1: 'Think quotes, scheduling, job and order tracking, invoicing, reporting. Wherever the live, trustworthy detail actually sits.',
+  q2: 'Did your tools fit your work from the start, or did your team bend its process and build workarounds to fit the tools?',
+  q3: 'Count each separate place the same details get typed or copied again: quote to job to schedule to invoice to report.',
+  q4: 'Include fixing mistakes, re-entering data, chasing down discrepancies, and redoing work a good system would have caught the first time.',
   q5: 'A rough estimate is fine. Add up data entry, chasing updates, and hand-building reports across your team in a typical week.',
-  q6: "Whatever describes your business best — there's no wrong answer. This helps us tailor the breakdown you'll see on your results page.",
-  q7: 'Be honest — the result is more useful if it matches where you actually are. "Just exploring" is a completely valid answer.',
-  q8: "This isn't a commitment — it just helps us give you a result that's actually relevant to your situation.",
+  q6: "Whatever describes your business best. There's no wrong answer; it just helps us tailor the breakdown on your results page.",
+  q7: 'Be honest. The result is more useful if it matches where you actually are. "Just exploring" is a completely valid answer.',
+  q8: "This isn't a commitment. It just helps us give you a result that's actually relevant to your situation.",
   q9: "No wrong answer. If you're researching for a partner, owner, or board, we can still give you something useful to bring back.",
-  q10: 'This helps us point you to the most relevant next step after your score — a conversation, a guide, or just your results to keep on file.',
+  q10: 'This helps us point you to the most relevant next step after your score: a conversation, a guide, or just your results to keep on file.',
 }
 
 function QuestionStep({
@@ -461,7 +461,7 @@ function EmailStep({
           Your score is ready. Where should we send it?
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-slate-500">
-          Enter your name and email below. We&apos;ll show your results immediately — and send a
+          Enter your name and email below. We&apos;ll show your results right away and send a
           copy to your inbox so you have it later.
         </p>
       </div>

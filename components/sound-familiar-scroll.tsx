@@ -16,7 +16,7 @@ const LINES: { text: string; cls: string }[] = [
   { text: 'analyzing how your business actually runs…', cls: 'text-slate-500' },
   { text: '', cls: '' },
   { text: "✗ real workflow lives in spreadsheets, sticky notes & people's heads", cls: 'text-slate-200' },
-  { text: '✗ 5 tools, each does ~60% of the job — none of them talk to each other', cls: 'text-slate-200' },
+  { text: '✗ 5 tools, each doing ~60% of the job, none of them talking to each other', cls: 'text-slate-200' },
   { text: '✗ every new order or client adds manual steps; the cracks widen as you grow', cls: 'text-slate-200' },
   { text: '', cls: '' },
   { text: "// it works… until it doesn't. and it never really scales.", cls: 'text-amber-400' },

@@ -10,7 +10,7 @@ import { ScopeRequestForm } from '@/components/scope-request-form'
 import type { Lead } from '@/lib/supabase-server'
 
 export const metadata: Metadata = {
-  title: 'Your Custom Software Readiness Score — GOLM',
+  title: 'Your Custom Software Readiness Score | GOLM',
 }
 
 // Force dynamic: token is unique per lead, never statically known
@@ -121,42 +121,42 @@ const BAND_CONFIG = {
     borderFg: 'border-indigo-400',
     headline: 'Your operation is ready for this. Now is the right time.',
     framing: (score: number) =>
-      `A score of ${score} puts you in the clearest-case bracket we see — the pain is real, the fit is strong, and your timeline and situation are aligned for a custom build to actually deliver.`,
+      `A score of ${score} puts you in the clearest-case bracket we see. The pain is real, the fit is strong, and your timeline lines up for a custom build to actually pay off.`,
     ctaHeading: "Let's talk about what a custom build looks like for you.",
     ctaBody:
-      "We'll spend 30 minutes looking at your actual workflow — what's costing you time, what a fit-for-purpose system would fix, and whether the investment makes sense given your size and stage. No pressure, no obligation.",
+      "We'll spend 30 minutes on your actual workflow: what's costing you time, what a fit-for-purpose system would fix, and whether the investment makes sense at your size. No pressure, no obligation.",
     ctaLabel: 'Book a free 30-minute call →',
     ctaEvent: 'cta_book_call_click',
     ctaStyle: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/20',
-    fallback: "Or reply to your results email — we'll get back to you within one business day.",
+    fallback: "Or reply to your results email and we'll get back to you within one business day.",
   },
   warm: {
     label: 'Good potential',
     badgeBg: 'bg-amber-500 text-white',
     scoreFg: 'text-amber-600',
     borderFg: 'border-amber-400',
-    headline: "There's real opportunity here — with the right scoping.",
+    headline: "There's real opportunity here, with the right scoping.",
     framing: (score: number) =>
-      `A score of ${score} tells us the pain is genuine and a custom build would likely pay off — but a few things (timeline, budget, or scope) aren't fully in place yet. That's normal, and it's exactly what a scoping conversation is for.`,
+      `A score of ${score} tells us the pain is genuine and a custom build would likely pay off. A few things (timeline, budget, or scope) aren't fully in place yet. That's normal, and it's exactly what a scoping conversation is for.`,
     ctaHeading: 'Want a clearer picture of what it would take?',
     ctaBody:
-      "Share a bit more about your operation and we'll put together a rough scope — what a fit-for-purpose build might include, a realistic ballpark, and what we'd need to know to give you a proper proposal. No cost, no commitment.",
+      "Share a bit more about your operation and we'll put together a rough scope: what a fit-for-purpose build might include, a realistic ballpark, and what we'd need for a proper proposal. No cost, no commitment.",
     ctaLabel: 'Request a free scope outline →',
     ctaEvent: 'cta_quote_click',
     ctaStyle: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/20',
-    fallback: "Or reply to your results email with any questions — we're easy to reach.",
+    fallback: "Or reply to your results email with any questions. We're easy to reach.",
   },
   cold: {
     label: 'Not yet',
     badgeBg: 'bg-slate-400 text-white',
     scoreFg: 'text-slate-600',
     borderFg: 'border-slate-300',
-    headline: 'Not the right moment — but that changes.',
+    headline: 'Not the right moment. But that changes.',
     framing: (score: number) =>
-      `A score of ${score} tells us one of two things: either the pain isn't severe enough yet to justify a custom build, or the timing and conditions (budget, authority, urgency) aren't in place. Either way, forcing it now wouldn't serve you — but staying in the loop means you'll know when the picture changes.`,
+      `A score of ${score} tells us one of two things: either the pain isn't severe enough yet to justify a custom build, or the timing and conditions (budget, authority, urgency) aren't in place. Either way, forcing it now wouldn't serve you. Staying in the loop means you'll know when that changes.`,
     ctaHeading: 'Keep this for when the time is right.',
     ctaBody:
-      "We publish practical content on when and how niche businesses know it's time to move past the spreadsheet stack — no hype, no spam. Join the list to get it when it's useful.",
+      "We publish practical content on how niche businesses know it's time to move past the spreadsheet stack. No hype, no spam. Join the list and get it when it's useful.",
     ctaLabel: 'Join the newsletter →',
     ctaEvent: 'cta_newsletter_click',
     ctaStyle: 'bg-slate-700 hover:bg-slate-800 text-white shadow-slate-600/20',
@@ -168,8 +168,8 @@ function ResultPageContent({ lead, insights, firstName, band }: ResultPageConten
   const cfg = BAND_CONFIG[band]
   const score = lead.readiness_score
   const greeting = firstName
-    ? `Hi ${firstName} — here's your breakdown.`
-    : "Hi — here's your breakdown."
+    ? `Hi ${firstName}, here's your breakdown.`
+    : "Here's your breakdown."
 
   const bookingUrl = process.env.BOOKING_URL || '#'
 
@@ -197,7 +197,7 @@ function ResultPageContent({ lead, insights, firstName, band }: ResultPageConten
           </div>
           <p className="mt-1 text-sm text-slate-400">Custom Software Readiness Score</p>
           <p className="mt-2 text-xs leading-relaxed text-slate-400">
-            A quick, directional read based on your answers — not a full audit. It points
+            A quick, directional read from your answers, not a full audit. It points
             to where the opportunity is; a real conversation is how you size it.
           </p>
         </section>
