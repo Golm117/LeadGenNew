@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* PRD §9.3 brand tokens */
+  --color-base: #FFFFFF;
+  --color-surface: #F8FAFC;
+  --color-text: #0F172A;
+  --color-muted: #64748B;
+  --color-accent: #4F46E5;
+  --color-accent-dark: #4338CA;
+
+  /* Typography — Inter from next/font */
+  --font-sans: var(--font-inter);
+
+  /* Surfaces — rounded, soft */
+  --radius-surface: 12px;
+  --radius-card: 16px;
+  --radius-btn: 10px;
+}
+
+body {
+  background-color: #FFFFFF;
+  color: #0F172A;
+  font-family: var(--font-inter, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

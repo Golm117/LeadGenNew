@@ -16,9 +16,14 @@ and measurement: see D-011 and tasks T-131 / T-160 / T-161.
 Shared across all variants:
 - **CTA button:** `Get your Custom Software Readiness Score — 2 min` → `/assessment` (carry UTM + `variant`)
 - **Micro-line under CTA:** *Free · 2 minutes · Results instantly*
-- **Visual:** radial 0–100 score gauge, needle in upper band, illustrative sample
-  **"78 / 100 — Strong fit."** Indigo fill, soft gradient splash behind. Split hero
-  (copy left / gauge right on desktop; stacked on mobile).
+- **Visual (D-013):** interactive **3D Spline scene**, re-skinned to the light/indigo
+  brand (NOT a black card), as the hero focal point on the right. Lazy-loaded
+  (`React.lazy` + `<Suspense>`) with a lightweight fallback; client-only. A
+  cursor-follow indigo glow sits behind it. The generic Spline robot is a
+  **placeholder** until a branded `.splinecode` scene is commissioned (Open item).
+  Split hero (copy left / 3D right on desktop; stacked on mobile). The radial
+  0–100 score-gauge motif ("78 / 100 — Strong fit") may be retained as a small
+  in-brand overlay/secondary element if it composes well, but the 3D scene is primary.
 
 ### Variant A — Outcome-led (CONTROL)
 - **Headline:** Software built for how your business actually works.
@@ -71,6 +76,7 @@ Placeholder figures for v1; swap for real ones in a later copy pass. Keep as 3�
 - **Layout:** split hero (copy ↔ gauge); centered content bands below, alternating white / `#F8FAFC`, generous whitespace.
 - **Accent discipline:** indigo `#4F46E5` only on CTAs, gauge fill, and the score number. One soft gradient splash behind the hero — the only flourish.
 - **Type:** Inter; large, bold, tight headlines; 16px relaxed body.
-- **Motion:** CTA hover-lift; gauge needle eases in on load. Nothing else.
+- **Motion:** CTA hover-lift; hero 3D Spline scene + cursor-follow indigo glow (D-013).
+  Elsewhere keep it restrained — no other animation below the hero.
 - **CTA frequency:** twice only (hero + bottom).
 - **Events:** `landing_view` and `quiz_start` both carry the assigned `variant` (A/B/C).
