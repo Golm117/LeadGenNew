@@ -17,19 +17,19 @@ const VARIANT_COPY = {
     headlineStart: 'Software built for how your business ',
     accentPhrases: ['actually works.', 'really runs.', 'operates day to day.'],
     subhead:
-      "Stop forcing your operations into tools made for someone else. In two minutes, see whether custom software is worth it for you — and where you're losing time today.",
+      "Your tools were built for someone else's business. In two minutes, find out where that's costing you, and whether a custom build is worth it.",
   },
   B: {
     headlineStart: 'The wrong software is quietly costing you ',
     accentPhrases: ['hours, money, and growth.', 'hours every single week.', 'more than you think.'],
     subhead:
-      'Manual entry, constant workarounds, systems that break as you scale. See exactly where your operation is leaking time — in two minutes.',
+      'Manual entry, constant workarounds, systems that buckle as you grow. In two minutes, see exactly where your operation is leaking time.',
   },
   C: {
     headlineStart: "You're forcing your business into software it was ",
     accentPhrases: ['never built for.', 'never designed to run.', 'never meant to handle.'],
     subhead:
-      "Spreadsheets and five disconnected tools, duct-taped into something that almost works. Find out what that's really costing you.",
+      "Spreadsheets and five disconnected tools, duct-taped into something that almost works. Find out what it's actually costing you.",
   },
 } as const
 

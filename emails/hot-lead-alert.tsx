@@ -58,7 +58,7 @@ export default function HotLeadAlert({ leadName, leadEmail, businessName, indust
 
             <Hr style={{ borderColor: '#E2E8F0', margin: '20px 0' }} />
             <Text style={{ color: '#64748B', fontSize: 13, margin: 0 }}>
-              Act fast — this lead is ready to buy. Reply to their email or call within 24 hours.
+              Act fast. This lead is ready to buy. Reply to their email or call within 24 hours.
             </Text>
           </Section>
         </Container>

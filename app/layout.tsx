@@ -11,7 +11,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Custom Software Readiness Assessment | GOLM',
-  description: 'See if custom software is worth it for your niche operations business — free 2-minute assessment.',
+  description: 'See if custom software is worth it for your niche operations business. Free 2-minute assessment.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
